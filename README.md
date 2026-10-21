@@ -1,40 +1,58 @@
 # Minecraft 全版本下载器
 
-一个纯前端实现的 Minecraft 全版本下载网页：自动检测 Mojang 官方版本清单中的**全部 920 个版本**（正式版 / 快照 / Beta / 远古版），点击下载时可选**官方源**或 **BMCLAPI 镜像**，并将文件打包为 ZIP（官方版本 JSON + JAR）后由浏览器直接下载。
+一键下载 Minecraft **全部 920 个版本**（正式版 / 快照 / Beta / 远古版），支持**官方源**和**国内镜像**，自动打包为 ZIP。
 
-## 功能特性
+🔗 **在线使用**：https://lindedaoqwq.github.io/minecraft-downloader/
 
-- **自动检测全部版本**：数据来自 Mojang 官方版本清单 `launchermeta.mojang.com`，无需手动维护版本列表
-- **双下载源**：官方源（Mojang 权威来源）/ BMCLAPI 国内镜像，每次下载时弹窗选择
-- **ZIP 打包**：内含 `{版本号}.json`（Mojang 官方版本元数据**原文**，字节未做任何改动）与 `{版本号}.jar`（与官方文件 SHA1 一致），不含其他文件
-- **打包过程可视化**：进度条 + 终端风格控制台日志，支持随时取消
-- **液态玻璃 UI**：参考 Prisma Minecraft iOS Launcher 设计风格，移动端优先适配
-- **零依赖**：单 HTML 文件，手写 ZIP 生成器（store 模式 + CRC32），无任何外部 JS/CSS 框架
+---
 
-## 在线使用
+## 快速开始
 
-部署后访问：`https://<你的用户名>.github.io/minecraft-downloader/`
+1. **打开网页**：https://lindedaoqwq.github.io/minecraft-downloader/
+2. **找到版本**：在列表里翻找，或直接用搜索框搜索（如 `1.7.10`）
+3. **点击「ZIP」按钮**：在版本行的右侧
+4. **选择下载源**：
+   - 🟩 **官方源** —— Mojang 官方服务器，最权威
+   - 🟦 **BMCLAPI 镜像** —— 国内加速通道，下载更快
+5. **等待打包完成**，浏览器会自动开始下载
 
-## 本地使用
+> 想下载服务端？点开版本详情，选择「客户端 / 服务端」后再选下载源即可。
 
-直接用浏览器打开 `index.html` 即可；或启动一个静态服务器：
+## ZIP 里有什么
 
-```bash
-python3 -m http.server 8000
-# 访问 http://localhost:8000
-```
+每个 ZIP 包含两个文件：
 
-## 数据来源
-
-| 内容 | 来源 |
+| 文件 | 说明 |
 |---|---|
-| 版本清单 | `https://launchermeta.mojang.com/mc/game/version_manifest.json` |
-| 版本 JSON（ZIP 内） | 清单内 `version.url`（piston-mojang.com 官方原文） |
-| JAR 文件 | 官方 `downloads.{client,server}.url`（piston-data / launcher.mojang.com） |
-| BMCLAPI 镜像 | `https://bmclapi2.bangbang93.com`（302 至 piston-data 同 hash 对象） |
+| `版本号.json` | Mojang 官方版本元数据**原文**（一个字节都没有改动） |
+| `版本号.jar` | 游戏文件（客户端或服务端，与官方文件完全一致，SHA1 校验相同） |
 
-## 说明
+## 常见问题
 
-- ZIP 内的 JSON 为 Mojang 官方版本元数据原文，与官方启动器下载的文件字节级一致
-- BMCLAPI 镜像的文件字节实际由 `piston-data.mojang.com` 分发，与其直链下载完全一致
-- 本项目为第三方工具，与 Mojang / Microsoft 无关联
+**官方源和 BMCLAPI 下载的文件有区别吗？**
+没有。两个源的文件字节完全一致（SHA1 相同），BMCLAPI 只是国内加速通道，文件实际由 Mojang 官方服务器分发。
+
+**为什么有些版本没有服务端？**
+Mojang 官方早期版本未发布服务端文件，这种情况下「服务端」选项会置灰，无法选择。
+
+**打包过程能看到进度吗？**
+可以。进度面板上有进度条和终端风格的控制台日志，显示每个阶段的详细情况；随时可以点「取消」中止。
+
+**版本列表会过期吗？**
+不会。版本数据自动检测自 Mojang 官方版本清单，新版本发布后打开网页即可看到。
+
+**手机能用吗？**
+可以。页面已针对手机屏幕优化，下载按钮和弹窗均适配触屏操作。
+
+## 版本类型说明
+
+| 类型 | 含义 |
+|---|---|
+| 正式版 | 稳定发布的游戏版本 |
+| 快照 | 测试中的预览版本 |
+| Beta | 2010-2011 年的 Beta 测试版 |
+| 远古版 | 更早的 Alpha/Infdev 等经典版本 |
+
+---
+
+*本项目为第三方工具，与 Mojang / Microsoft 无关联。游戏文件版权归 Mojang 所有。*
