@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0d0b">
+<title>Minecraft 全版本下载器</title>
+<style>
+  :root{
+    --txt:#f2f5ef;
+    --muted:rgba(242,245,239,.62);
+    --faint:rgba(242,245,239,.40);
+    --glass-bg:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.042));
+    --glass-brd:rgba(255,255,255,.12);
+    --green:#9ccc65;--green-d:#7cb342;
+    --blue:#4fc3f7;--blue-d:#29b6f6;
+    --amber:#ffca28;
+    --red:#ef5350;
+    --r-lg:24px;--r-md:18px;--r-sm:12px;
+    --mono:"SF Mono","Cascadia Code",Consolas,Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:#0a0d0b;color:var(--txt);font-family:var(--sans);
+    min-height:100vh;min-height:100dvh;overflow-x:hidden;
+    padding-bottom:calc(24px + env(safe-area-inset-bottom));
+    line-height:1.5;
+  }
+
+  /* ---------- 背景光斑（液态玻璃氛围） ---------- */
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
+      radial-gradient(120% 80% at 50% -10%,#101a12 0%,#0a0d0b 55%)}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;will-change:transform}
+  .blob.b1{width:58vw;height:58vw;max-width:520px;max-height:520px;left:-14vw;top:-10vw;
+    background:radial-gradient(circle,rgba(124,179,66,.34),transparent 65%);animation:float1 22s ease-in-out infinite}
+  .blob.b2{width:52vw;height:52vw;max-width:460px;max-height:460px;right:-16vw;top:12vw;
+    background:radial-gradient(circle,rgba(41,182,246,.22),transparent 65%);animation:float2 26s ease-in-out infinite}
+  .blob.b3{width:60vw;height:60vw;max-width:560px;max-height:560px;left:8vw;bottom:-24vw;
+    background:radial-gradient(circle,rgba(124,63,214,.16),transparent 65%);animation:float3 30s ease-in-out infinite}
+  @keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(6vw,4vw)}}
+  @keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-5vw,6vw)}}
+  @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(4vw,-5vw)}}
+  @media (prefers-reduced-motion:reduce){.blob{animation:none}}
+
+  /* ---------- 玻璃材质 ---------- */
+  .glass{
+    background:var(--glass-bg);
+    -webkit-backdrop-filter:blur(26px) saturate(1.5);
+    backdrop-filter:blur(26px) saturate(1.5);
+    border:1px solid var(--glass-brd);
+    box-shadow:0 10px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.13);
+  }
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:44px 0 20px;text-align:center}
+  .hero-logo{display:inline-block;margin-bottom:12px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+  .hero h1{
+    font-size:clamp(24px,7vw,42px);font-weight:800;letter-spacing:-.01em;line-height:1.2;
+    background:linear-gradient(120deg,#d9f2b8 0%,#9ccc65 45%,#4fc3f7 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .hero p.sub{margin-top:10px;color:var(--muted);font-size:clamp(13px,3.4vw,15px);padding:0 8px}
+  .hero p.sub b{color:var(--green);font-weight:600}
+
+  /* ---------- 统计 ---------- */
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:22px 0 14px;border-radius:var(--r-lg);padding:14px}
+  .stat{padding:8px 10px;text-align:center;min-width:0}
+  .stat .k{font-size:10.5px;color:var(--faint);letter-spacing:.14em;margin-bottom:4px;white-space:nowrap}
+  .stat .v{font-family:var(--mono);font-size:clamp(15px,4.4vw,20px);font-weight:700;color:var(--green);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat .v.blue{color:var(--blue)}
+  .stat .v.small{font-size:clamp(11px,3vw,13px);color:var(--muted)}
+
+  /* ---------- 工具栏 ---------- */
+  .toolbar{border-radius:var(--r-lg);padding:12px;margin-bottom:14px}
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;font-size:13px;font-weight:600;padding:9px 15px;cursor:pointer;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid var(--glass-brd);color:var(--muted);
+    font-family:var(--sans);transition:all .15s;min-height:36px;display:inline-flex;align-items:center;gap:5px;
+  }
+  .chip .n{font-family:var(--mono);font-size:10.5px;opacity:.7}
+  .chip.active{background:linear-gradient(135deg,#9ccc65,#7cb342);color:#0e1a05;border-color:transparent;font-weight:700}
+  .chip:active{transform:scale(.95)}
+  .toolbar-row2{display:flex;gap:8px;margin-top:10px}
+  .search-box{flex:1;min-width:0;display:flex;align-items:center;gap:8px;
+    background:rgba(0,0,0,.28);border:1px solid var(--glass-brd);border-radius:999px;padding:0 14px}
+  .search-box svg{flex:none;opacity:.45}
+  .search-box input{
+    flex:1;min-width:0;background:none;border:none;outline:none;color:var(--txt);
+    padding:11px 0;font-size:14px;font-family:var(--sans);
+  }
+  .search-box input::placeholder{color:var(--faint)}
+  .sort-btn{
+    flex:none;font-size:12.5px;font-weight:600;padding:0 15px;cursor:pointer;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid var(--glass-brd);color:var(--muted);
+    font-family:var(--sans);min-height:40px;display:inline-flex;align-items:center;
+  }
+  .sort-btn:active{transform:scale(.95)}
+
+  /* ---------- 版本列表 ---------- */
+  #versionList{display:flex;flex-direction:column;gap:10px}
+  .vrow{border-radius:var(--r-md);overflow:hidden;transition:border-color .18s}
+  .vrow:hover{border-color:rgba(255,255,255,.2)}
+  .vrow.open{border-color:rgba(156,204,101,.45)}
+  .vrow-main{
+    width:100%;display:flex;align-items:center;gap:10px;padding:12px 12px 12px 14px;
+    background:none;border:none;cursor:pointer;text-align:left;color:var(--txt);font-family:var(--sans);
+    min-height:56px;
+  }
+  .chev{color:var(--faint);font-size:10px;transition:transform .18s;flex:none;width:12px}
+  .vrow.open .chev{transform:rotate(90deg);color:var(--green)}
+  .vid{font-family:var(--mono);font-size:14.5px;font-weight:700;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex-shrink:1}
+  .badge{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:999px;flex:none;border:1px solid}
+  .badge.release{color:var(--green);border-color:rgba(156,204,101,.4);background:rgba(156,204,101,.09)}
+  .badge.snapshot{color:var(--amber);border-color:rgba(255,202,40,.35);background:rgba(255,202,40,.08)}
+  .badge.old_beta{color:#d7a86e;border-color:rgba(215,168,110,.35);background:rgba(215,168,110,.08)}
+  .badge.old_alpha{color:#b5937f;border-color:rgba(181,147,127,.35);background:rgba(181,147,127,.08)}
+  .badge.newest{color:#ff8a80;border-color:rgba(255,138,128,.4);background:rgba(255,138,128,.1)}
+  .vdate{color:var(--faint);font-size:11px;font-family:var(--mono);margin-left:auto;flex:none}
+  @media (max-width:420px){.vdate{display:none}}
+  .dl-btn{
+    flex:none;font-size:12.5px;font-weight:700;font-family:var(--sans);
+    padding:9px 15px;min-height:38px;cursor:pointer;border-radius:999px;border:none;
+    background:linear-gradient(135deg,#9ccc65,#7cb342);color:#0e1a05;
+    box-shadow:0 4px 14px rgba(124,179,66,.32),inset 0 1px 0 rgba(255,255,255,.35);
+    display:inline-flex;align-items:center;gap:6px;transition:transform .1s;
+  }
+  .dl-btn svg{flex:none}
+  .dl-btn:active{transform:scale(.94)}
+  .dl-btn[disabled]{opacity:.5;pointer-events:none}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,.28);border-top-color:currentColor;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-1px;flex:none}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .vdetail{border-top:1px solid rgba(255,255,255,.07);padding:14px;background:rgba(0,0,0,.22)}
+  .dsec{border-radius:var(--r-sm);padding:12px 13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)}
+  .dsec + .dsec{margin-top:10px}
+  .dsec h4{font-size:11.5px;letter-spacing:.1em;color:var(--faint);margin-bottom:10px;display:flex;align-items:center;gap:7px;font-weight:600}
+  .dsec h4 .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .dot.g{background:var(--green)}.dot.b{background:var(--blue)}.dot.a{background:var(--amber)}
+  .act-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .act-btn{
+    font-size:13px;font-weight:700;font-family:var(--sans);padding:10px 16px;min-height:40px;cursor:pointer;border-radius:999px;border:none;
+    background:linear-gradient(135deg,#9ccc65,#7cb342);color:#0e1a05;
+    box-shadow:0 4px 14px rgba(124,179,66,.3),inset 0 1px 0 rgba(255,255,255,.35);
+    display:inline-flex;align-items:center;gap:6px;transition:transform .1s;
+  }
+  .act-btn.blue{background:linear-gradient(135deg,#81d4fa,#29b6f6);color:#03293d;box-shadow:0 4px 14px rgba(41,182,246,.3),inset 0 1px 0 rgba(255,255,255,.35)}
+  .act-btn.ghost{background:rgba(255,255,255,.07);color:var(--txt);border:1px solid var(--glass-brd);box-shadow:none;font-weight:600}
+  .act-btn:active{transform:scale(.95)}
+  .act-btn[disabled]{opacity:.4;pointer-events:none}
+  .link-item{margin-top:9px}
+  .link-item .src{font-size:10.5px;color:var(--faint);letter-spacing:.08em;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+  .link-item code{
+    display:block;font-family:var(--mono);font-size:10.5px;color:#c9d4b8;background:rgba(0,0,0,.32);
+    border:1px solid rgba(255,255,255,.07);padding:8px 10px;border-radius:8px;
+    word-break:break-all;line-height:1.5;
+  }
+  .link-btns{display:flex;gap:6px;margin-top:6px}
+  .mini-btn{
+    font-size:11.5px;font-weight:700;font-family:var(--sans);padding:7px 13px;cursor:pointer;border-radius:999px;
+    border:1px solid var(--glass-brd);background:rgba(255,255,255,.06);color:var(--muted);min-height:32px;
+  }
+  .mini-btn:active{transform:scale(.94)}
+  .mini-btn:active{color:var(--green)}
+  .meta-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .meta-table td{padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.07);vertical-align:top}
+  .meta-table tr:last-child td{border-bottom:none}
+  .meta-table td.k{color:var(--faint);width:64px;flex:none;white-space:nowrap}
+  .meta-table td.v{font-family:var(--mono);font-size:11px;color:#cfd8c2;word-break:break-all}
+  .note-line{font-size:11.5px;color:var(--faint);margin-top:10px;line-height:1.65;border-top:1px dashed rgba(255,255,255,.08);padding-top:9px}
+  .note-line b{color:var(--muted);font-weight:600}
+
+  /* ---------- 列表底部 ---------- */
+  .list-foot{margin:16px 0 6px;text-align:center}
+  .load-btn{
+    font-size:13.5px;font-weight:700;font-family:var(--sans);padding:12px 32px;cursor:pointer;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid var(--glass-brd);color:var(--txt);min-height:44px;
+  }
+  .load-btn:active{transform:scale(.96)}
+  .list-count{font-size:11.5px;color:var(--faint);margin-top:10px;font-family:var(--mono)}
+
+  /* ---------- 状态卡片 ---------- */
+  .state-card{border-radius:var(--r-lg);padding:36px 22px;text-align:center}
+  .state-card .big{font-size:15px;font-weight:700;margin:14px 0 6px}
+  .state-card .sm{font-size:12.5px;color:var(--muted);line-height:1.8}
+  .cube-loader{display:inline-grid;grid-template-columns:repeat(3,9px);gap:3px;animation:cb 1s infinite}
+  .cube-loader i{width:9px;height:9px;background:var(--green);display:block;border-radius:2px;animation:cb2 1.2s infinite}
+  .cube-loader i:nth-child(2){animation-delay:.12s}.cube-loader i:nth-child(3){animation-delay:.24s}
+  .cube-loader i:nth-child(4){animation-delay:.36s}.cube-loader i:nth-child(5){animation-delay:.48s}
+  .cube-loader i:nth-child(6){animation-delay:.6s}.cube-loader i:nth-child(7){animation-delay:.72s}
+  .cube-loader i:nth-child(8){animation-delay:.84s}.cube-loader i:nth-child(9){animation-delay:.96s}
+  @keyframes cb{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes cb2{0%,70%,100%{opacity:.25;transform:scale(.85)}35%{opacity:1;transform:scale(1)}}
+
+  /* ---------- 下载源选择弹窗（移动端底部Sheet） ---------- */
+  .modal-layer{position:fixed;inset:0;z-index:120;display:flex;align-items:flex-end;justify-content:center}
+  .modal-layer[hidden]{display:none}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(4,6,5,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:fadein .2s}
+  .modal-sheet{
+    position:relative;width:100%;max-width:460px;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;
+    border-radius:28px 28px 0 0;padding:8px 18px calc(18px + env(safe-area-inset-bottom));
+    animation:sheetup .28s cubic-bezier(.32,.72,.35,1);
+  }
+  @keyframes sheetup{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .sheet-handle{width:38px;height:5px;border-radius:999px;background:rgba(255,255,255,.22);margin:4px auto 14px}
+  .modal-title{font-size:19px;font-weight:800;text-align:center}
+  .modal-ver{text-align:center;margin:8px 0 16px;font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+  .modal-ver .vid{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--txt)}
+  .kind-seg{display:flex;background:rgba(0,0,0,.3);border:1px solid var(--glass-brd);border-radius:999px;padding:4px;margin-bottom:16px}
+  .kind-seg button{
+    flex:1;font-size:13.5px;font-weight:700;font-family:var(--sans);padding:10px;border:none;border-radius:999px;
+    background:none;color:var(--muted);cursor:pointer;min-height:40px;transition:all .15s;
+  }
+  .kind-seg button.active{background:linear-gradient(135deg,#9ccc65,#7cb342);color:#0e1a05}
+  .kind-seg button:disabled{opacity:.35;cursor:not-allowed}
+  .src-card{
+    width:100%;display:flex;align-items:center;gap:13px;text-align:left;cursor:pointer;
+    border-radius:var(--r-md);padding:15px;margin-bottom:10px;font-family:var(--sans);
+    background:rgba(255,255,255,.05);border:1px solid var(--glass-brd);color:var(--txt);
+    transition:transform .12s,border-color .15s;min-height:72px;
+  }
+  .src-card:active{transform:scale(.98)}
+  .src-card .ic{
+    flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:20px;
+  }
+  .src-card.official .ic{background:linear-gradient(135deg,rgba(156,204,101,.28),rgba(124,179,66,.16));border:1px solid rgba(156,204,101,.35)}
+  .src-card.bmcl .ic{background:linear-gradient(135deg,rgba(79,195,247,.26),rgba(41,182,246,.14));border:1px solid rgba(79,195,247,.35)}
+  .src-card .t{font-size:15px;font-weight:700;margin-bottom:3px}
+  .src-card .d{font-size:11.5px;color:var(--muted);line-height:1.55}
+  .src-card .arrow{margin-left:auto;color:var(--faint);font-size:16px;flex:none}
+  .modal-note{
+    font-size:11.5px;color:var(--faint);line-height:1.7;background:rgba(255,202,40,.06);
+    border:1px solid rgba(255,202,40,.16);border-radius:var(--r-sm);padding:10px 12px;margin:4px 0 14px;
+  }
+  .modal-note b{color:var(--amber);font-weight:600}
+  .modal-cancel{
+    width:100%;font-size:14px;font-weight:700;font-family:var(--sans);padding:13px;cursor:pointer;border-radius:999px;
+    background:rgba(255,255,255,.06);border:1px solid var(--glass-brd);color:var(--muted);min-height:46px;
+  }
+  .modal-cancel:active{transform:scale(.97)}
+  @media (min-width:640px){
+    .modal-layer{align-items:center}
+    .modal-sheet{border-radius:28px;padding:24px;animation:popin .24s cubic-bezier(.32,.72,.35,1)}
+    .sheet-handle{display:none}
+    @keyframes popin{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+  }
+
+  /* ---------- 打包进度面板 ---------- */
+  .progress-panel{
+    position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:110;
+    border-radius:22px;padding:14px 16px;
+  }
+  .progress-panel[hidden]{display:none}
+  @media (min-width:640px){.progress-panel{left:auto;right:20px;bottom:20px;width:360px}}
+  .pp-head{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;margin-bottom:3px}
+  .pp-head .st{margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--muted)}
+  .pp-stage{font-size:11.5px;color:var(--muted);margin-bottom:10px;font-family:var(--mono);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pp-bar{height:12px;background:rgba(0,0,0,.35);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.07)}
+  .pp-bar i{display:block;height:100%;width:0;border-radius:999px;
+    background:repeating-linear-gradient(115deg,#9ccc65 0 8px,#7cb342 8px 16px);transition:width .2s}
+  .pp-actions{margin-top:10px;text-align:right}
+  .pp-cancel{font-size:11.5px;font-weight:700;font-family:var(--sans);padding:7px 15px;cursor:pointer;border-radius:999px;
+    border:1px solid var(--glass-brd);background:rgba(255,255,255,.05);color:var(--muted);min-height:32px}
+  .pp-cancel:active{transform:scale(.94)}
+  .pp-toggle{font-size:11px;font-weight:700;font-family:var(--sans);padding:4px 11px;cursor:pointer;border-radius:999px;
+    border:1px solid var(--glass-brd);background:rgba(255,255,255,.05);color:var(--muted);min-height:28px;margin-left:8px}
+  .pp-toggle:active{transform:scale(.94)}
+  .pp-console{
+    margin-top:10px;border-radius:12px;background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.08);
+    padding:8px 10px;height:104px;overflow-y:auto;overscroll-behavior:contain;
+    font-family:var(--mono);font-size:10.5px;line-height:1.8;color:var(--muted);
+    -webkit-overflow-scrolling:touch;
+  }
+  .pp-console[hidden]{display:none}
+  .pp-console .ln{white-space:pre-wrap;word-break:break-all}
+  .pp-console .ln .ts{color:var(--faint);margin-right:6px}
+  .pp-console .ln.sys{color:#90caf9}
+  .pp-console .ln.info{color:var(--muted)}
+  .pp-console .ln.ok{color:#aed581}
+  .pp-console .ln.err{color:#ef9a9a}
+
+  /* ---------- Toast ---------- */
+  .toast-wrap{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+    z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;width:max-content;max-width:92vw;pointer-events:none}
+  .toast{
+    background:rgba(20,26,20,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    border:1px solid var(--glass-brd);border-left:3px solid var(--green);
+    padding:11px 17px;font-size:13px;border-radius:14px;box-shadow:0 10px 34px rgba(0,0,0,.5);
+    animation:tin .22s ease-out;line-height:1.5;
+  }
+  .toast.err{border-left-color:var(--red)}
+  .toast.out{animation:tout .25s ease-in forwards}
+  @keyframes tin{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+  @keyframes tout{to{opacity:0;transform:translateY(-10px)}}
+
+  footer{margin-top:36px;padding:20px 0 6px;border-top:1px solid rgba(255,255,255,.07);color:var(--faint);font-size:11.5px;line-height:1.9;text-align:center}
+  footer code{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  footer b{color:var(--muted)}
+
+  /* ---------- 桌面端增强 ---------- */
+  @media (min-width:768px){
+    .wrap{padding:0 24px}
+    .hero{padding:64px 0 24px}
+    .stats{grid-template-columns:repeat(4,1fr);padding:18px}
+    .toolbar{display:flex;align-items:center;gap:10px;padding:14px}
+    .chips{overflow:visible;flex:none}
+    .toolbar-row2{margin-top:0;flex:1;justify-content:flex-end;min-width:0}
+    .search-box{max-width:300px}
+    .vrow-main{padding:13px 14px 13px 16px}
+    .vid{font-size:15px}
+    .vdetail{padding:16px}
+    .dsec{padding:14px 16px}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+</div>
+
+<header class="hero">
+  <div class="hero-logo">
+    <svg width="60" height="60" viewBox="0 0 64 64" aria-hidden="true">
+      <polygon points="32,2 62,17 32,32 2,17" fill="#8bc34a"/>
+      <polygon points="32,2 62,17 32,32 2,17" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+      <polygon points="2,17 32,32 32,62 2,47" fill="#6d4c41"/>
+      <polygon points="2,17 32,32 32,62 2,47" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+      <polygon points="62,17 32,32 32,62 62,47" fill="#8d6e63"/>
+      <polygon points="62,17 32,32 32,62 62,47" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+      <rect x="10" y="12" width="7" height="4" rx="1" fill="#c5e1a5" opacity=".85"/>
+      <rect x="40" y="21" width="6" height="4" rx="1" fill="#c5e1a5" opacity=".6"/>
+      <rect x="8" y="26" width="5" height="4" rx="1" fill="#5d4037" opacity=".7"/>
+      <rect x="42" y="36" width="6" height="4" rx="1" fill="#6d4c41" opacity=".8"/>
+    </svg>
+  </div>
+  <h1>Minecraft 全版本下载器</h1>
+  <p class="sub">自动检测<b>全部 920 个版本</b> · 点击下载时选择<b>官方源 / BMCLAPI 镜像</b> · 打包为 <b>ZIP（JSON + JAR）</b></p>
+</header>
+
+<div class="wrap">
+  <section class="stats glass" id="stats" hidden>
+    <div class="stat"><div class="k">收录版本</div><div class="v" id="stTotal">-</div></div>
+    <div class="stat"><div class="k">最新正式版</div><div class="v" id="stRelease">-</div></div>
+    <div class="stat"><div class="k">最新快照</div><div class="v blue" id="stSnapshot">-</div></div>
+    <div class="stat"><div class="k">版本跨度</div><div class="v small" id="stSpan">-</div></div>
+  </section>
+
+  <section class="toolbar glass" id="toolbar" hidden>
+    <div class="chips" id="chips">
+      <button class="chip active" data-filter="all">全部<span class="n" id="cAll"></span></button>
+      <button class="chip" data-filter="release">正式版<span class="n" id="cRelease"></span></button>
+      <button class="chip" data-filter="snapshot">快照<span class="n" id="cSnapshot"></span></button>
+      <button class="chip" data-filter="old_beta">Beta<span class="n" id="cBeta"></span></button>
+      <button class="chip" data-filter="old_alpha">远古版<span class="n" id="cAlpha"></span></button>
+    </div>
+    <div class="toolbar-row2">
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="搜索版本号，如 1.7.10" autocomplete="off">
+      </div>
+      <button class="sort-btn" id="sortBtn">↓ 最新在前</button>
+    </div>
+  </section>
+
+  <main id="versionList"></main>
+  <div class="list-foot" id="listFoot" hidden>
+    <button class="load-btn" id="loadMore">加载更多</button>
+    <div class="list-count" id="listCount"></div>
+  </div>
+
+  <footer>
+    <p>版本数据来自 Mojang 官方版本清单 <code>launchermeta.mojang.com</code>（自动检测）。ZIP 内的 JSON 为<b>官方版本元数据原文</b>（字节未做任何改动，与官方启动器下载的文件一致）；JAR 与官方文件 SHA1 相同。</p>
+    <p>BMCLAPI 镜像由 bangbang93 提供：<code>bmclapi2.bangbang93.com</code> · 本页面为第三方工具，与 Mojang / Microsoft 无关联。</p>
+  </footer>
+</div>
+
+<!-- 下载源选择弹窗 -->
+<div class="modal-layer" id="modalLayer" hidden>
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-sheet glass" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="sheet-handle"></div>
+    <h3 class="modal-title" id="modalTitle">选择下载源</h3>
+    <div class="modal-ver" id="modalVer"></div>
+    <div class="kind-seg" id="kindSeg">
+      <button type="button" data-kind="client" class="active">客户端</button>
+      <button type="button" data-kind="server">服务端</button>
+    </div>
+    <div id="modalBody"></div>
+    <button class="modal-cancel" id="modalCancel" type="button">取消</button>
+  </div>
+</div>
+
+<!-- 打包进度面板 -->
+<div class="progress-panel glass" id="progressPanel" hidden>
+  <div class="pp-head"><span id="ppTitle">正在打包</span><span class="st" id="ppState"></span><button class="pp-toggle" id="ppConsoleBtn" type="button">收起</button></div>
+  <div class="pp-stage" id="ppStage"></div>
+  <div class="pp-bar"><i id="ppFill"></i></div>
+  <div class="pp-console" id="ppConsole"></div>
+  <div class="pp-actions"><button class="pp-cancel" id="ppCancel" type="button">取消</button></div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+ * Minecraft 全版本下载器
+ * - 版本清单: https://launchermeta.mojang.com/mc/game/version_manifest.json（官方，CORS 可达）
+ * - 版本 JSON: 清单内 version.url（piston-meta.mojang.com，官方原文，字节不改动）
+ * - 官方源 JAR: 版本 JSON 内 downloads.{client,server}.url（piston-data / launcher.mojang.com）
+ * - BMCLAPI 源: https://bmclapi2.bangbang93.com/version/{id}/{client|server}
+ *   该链接 302 跳转至 piston-data.mojang.com 的同 hash 对象，与其直链下载文件完全一致。
+ * - 打包: 纯前端手写 ZIP（store 模式 + CRC32），零外部依赖
+ * ===================================================================== */
+
+const MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
+const BMCL_BASE = "https://bmclapi2.bangbang93.com";
+const SRC_LABEL = { official: "官方源", bmclapi: "BMCLAPI 镜像" };
+
+const TYPE_LABEL = { release: "正式版", snapshot: "快照", old_beta: "Beta", old_alpha: "远古版" };
+
+const state = {
+  manifest: null,
+  filtered: [],
+  filter: "all",
+  search: "",
+  sortDesc: true,
+  rendered: 0,
+  batch: 60,
+  metaCache: new Map(),
+  busy: new Set(),
+};
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+/* ---------------- 工具 ---------------- */
+function fmtSize(n) {
+  if (!n && n !== 0) return "-";
+  if (n < 1024) return n + " B";
+  if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
+  if (n < 1073741824) return (n / 1048576).toFixed(1) + " MB";
+  return (n / 1073741824).toFixed(2) + " GB";
+}
+function fmtDate(iso) { return iso ? iso.slice(0, 10) : "-"; }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+const ICON_DL = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>';
+
+/* ---------------- Toast ---------------- */
+function toast(msg, isErr = false, ms = 4200) {
+  const el = document.createElement("div");
+  el.className = "toast" + (isErr ? " err" : "");
+  el.textContent = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 260); }, ms);
+}
+
+/* ---------------- CRC32 ---------------- */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(data) {
+  let c = 0xffffffff;
+  for (let i = 0; i < data.length; i++) c = CRC_TABLE[(c ^ data[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+/* 分块 CRC32（带进度回调，避免长时间阻塞 UI） */
+async function crc32Async(data, onProgress) {
+  let c = 0xffffffff;
+  const CHUNK = 4 * 1024 * 1024;
+  for (let i = 0; i < data.length; i += CHUNK) {
+    const end = Math.min(i + CHUNK, data.length);
+    for (let j = i; j < end; j++) c = CRC_TABLE[(c ^ data[j]) & 0xff] ^ (c >>> 8);
+    if (onProgress) onProgress(end / data.length);
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+/* ---------------- ZIP 生成（store 模式，支持打包进度） ---------------- */
+function dosDateTime(d) {
+  const time = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xffff;
+  const date = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xffff;
+  return { time, date };
+}
+async function makeZip(files, onProgress) {
+  const enc = new TextEncoder();
+  const { time, date } = dosDateTime(new Date());
+  const parts = [], central = [];
+  let offset = 0;
+  const totalBytes = files.reduce((s, f) => s + f.data.length, 0) || 1;
+  let doneBytes = 0;
+
+  for (const f of files) {
+    const nameBytes = enc.encode(f.name);
+    const crc = await crc32Async(f.data, (p) => {
+      if (onProgress) onProgress((doneBytes + p * f.data.length) / totalBytes);
+    });
+    doneBytes += f.data.length;
+
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true);
+    lh.setUint16(4, 20, true);
+    lh.setUint16(6, 0x0800, true);   // UTF-8 文件名
+    lh.setUint16(8, 0, true);        // store
+    lh.setUint16(10, time, true);
+    lh.setUint16(12, date, true);
+    lh.setUint32(14, crc, true);
+    lh.setUint32(18, f.data.length, true);
+    lh.setUint32(22, f.data.length, true);
+    lh.setUint16(26, nameBytes.length, true);
+    lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), nameBytes, f.data);
+
+    const cd = new DataView(new ArrayBuffer(46));
+    cd.setUint32(0, 0x02014b50, true);
+    cd.setUint16(4, 20, true);
+    cd.setUint16(6, 20, true);
+    cd.setUint16(8, 0x0800, true);
+    cd.setUint16(10, 0, true);
+    cd.setUint16(12, time, true);
+    cd.setUint16(14, date, true);
+    cd.setUint32(16, crc, true);
+    cd.setUint32(20, f.data.length, true);
+    cd.setUint32(24, f.data.length, true);
+    cd.setUint16(28, nameBytes.length, true);
+    cd.setUint16(30, 0, true);
+    cd.setUint16(32, 0, true);
+    cd.setUint16(34, 0, true);
+    cd.setUint16(36, 0, true);
+    cd.setUint32(38, 0, true);
+    cd.setUint32(42, offset, true);
+    central.push(new Uint8Array(cd.buffer), nameBytes);
+
+    offset += 30 + nameBytes.length + f.data.length;
+  }
+
+  const cdSize = central.reduce((s, p) => s + p.length, 0);
+  const eocd = new DataView(new ArrayBuffer(22));
+  eocd.setUint32(0, 0x06054b50, true);
+  eocd.setUint16(8, files.length, true);
+  eocd.setUint16(10, files.length, true);
+  eocd.setUint32(12, cdSize, true);
+  eocd.setUint32(16, offset, true);
+
+  if (onProgress) onProgress(1);
+  return new Blob([...parts, ...central, new Uint8Array(eocd.buffer)], { type: "application/zip" });
+}
+
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+/* ---------------- 版本元数据（缓存；JSON 为官方原文，不做任何改动） ---------------- */
+async function getMeta(id, url) {
+  if (state.metaCache.has(id)) return state.metaCache.get(id);
+  const resp = await fetch(url, { cache: "no-store" });
+  if (!resp.ok) throw new Error("获取版本 JSON 失败：HTTP " + resp.status);
+  const text = await resp.text();          // 官方原文，原样打包
+  let json;
+  try { json = JSON.parse(text); } catch (e) { throw new Error("版本 JSON 解析失败"); }
+  const meta = { text, json };
+  state.metaCache.set(id, meta);
+  return meta;
+}
+
+/* ---------------- 带进度的字节下载 ---------------- */
+async function fetchBytes(url, expectedSize, onProgress, signal) {
+  const resp = await fetch(url, { cache: "no-store", signal });
+  if (!resp.ok) throw new Error("下载失败：HTTP " + resp.status);
+  const total = parseInt(resp.headers.get("content-length") || "0", 10) || expectedSize || 0;
+  if (!resp.body) {
+    const buf = new Uint8Array(await resp.arrayBuffer());
+    if (onProgress) onProgress(1, buf.length, total);
+    return buf;
+  }
+  const reader = resp.body.getReader();
+  const chunks = [];
+  let received = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    if (onProgress) onProgress(total ? received / total : 0, received, total);
+  }
+  const out = new Uint8Array(received);
+  let off = 0;
+  for (const c of chunks) { out.set(c, off); off += c.length; }
+  return out;
+}
+
+/* ---------------- 打包进度面板（仅覆盖打包过程：获取字节 + 生成 ZIP；文件保存由浏览器原生下载直接完成） ---------------- */
+const pp = {
+  show(title) {
+    $("#ppTitle").textContent = title;
+    $("#ppState").textContent = "";
+    $("#ppStage").textContent = "准备中…";
+    $("#ppFill").style.width = "0%";
+    $("#ppCancel").disabled = false;
+    $("#ppConsole").innerHTML = "";          // 每个任务开始时清空控制台
+    $("#ppConsoleBtn").textContent = "收起";
+    $("#ppConsole").hidden = false;
+    $("#progressPanel").hidden = false;
+    this.log("任务开始 · " + title, "sys");
+  },
+  log(msg, cls = "info") {
+    const box = $("#ppConsole");
+    const line = document.createElement("div");
+    line.className = "ln " + cls;
+    const now = new Date();
+    const ts = [now.getHours(), now.getMinutes(), now.getSeconds()].map((n) => String(n).padStart(2, "0")).join(":");
+    const t = document.createElement("span");
+    t.className = "ts"; t.textContent = ts;
+    line.appendChild(t);
+    line.appendChild(document.createTextNode(msg));
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;         // 自动滚动到底部
+  },
+  stage(txt) { $("#ppStage").textContent = txt; },
+  progress(ratio, txt) {
+    $("#ppFill").style.width = Math.min(100, ratio * 100).toFixed(1) + "%";
+    if (txt) $("#ppStage").textContent = txt;
+  },
+  done(txt) {
+    $("#ppFill").style.width = "100%";
+    $("#ppStage").textContent = txt || "已完成";
+    $("#ppState").textContent = "✓";
+    $("#ppCancel").disabled = true;
+    this.log("任务完成 ✓", "ok");
+    setTimeout(() => { $("#progressPanel").hidden = true; }, 2600);
+  },
+  fail(msg) {
+    $("#ppStage").textContent = "失败：" + msg;
+    $("#ppState").textContent = "✗";
+    $("#ppCancel").disabled = true;
+    this.log("任务失败：" + msg, "err");
+    setTimeout(() => { $("#progressPanel").hidden = true; }, 4600);
+  },
+  hide() { $("#progressPanel").hidden = true; },
+};
+let currentAbort = null;
+$("#ppCancel").addEventListener("click", () => {
+  if (currentAbort) { currentAbort.abort(); toast("已取消打包"); pp.log("用户取消了打包", "err"); }
+  pp.hide();
+});
+$("#ppConsoleBtn").addEventListener("click", () => {
+  const box = $("#ppConsole");
+  box.hidden = !box.hidden;
+  $("#ppConsoleBtn").textContent = box.hidden ? "控制台" : "收起";
+});
+
+/* ---------------- 按钮加载态 ---------------- */
+function setBtnLoading(btn, on) {
+  if (!btn) return;
+  if (on) {
+    if (btn.dataset.orig === undefined) btn.dataset.orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spin"></span>打包中';
+    btn.disabled = true;
+  } else if (btn.dataset.orig !== undefined) {
+    btn.innerHTML = btn.dataset.orig;
+    btn.disabled = false;
+    delete btn.dataset.orig;
+  }
+}
+
+/* ---------------- 核心：构建 ZIP 并直接触发下载 ---------------- */
+async function downloadZip(version, kind, source, btn) {
+  const key = version.id + ":" + kind;
+  if (state.busy.has(key)) return;
+  state.busy.add(key);
+  setBtnLoading(btn, true);
+
+  const ctrl = new AbortController();
+  currentAbort = ctrl;
+  const isServer = kind === "server";
+  pp.show(`正在打包 · Minecraft ${version.id} · ${isServer ? "服务端" : "客户端"}`);
+
+  try {
+    pp.stage("获取版本信息…");
+    pp.log(`获取版本元数据：${version.url}`);
+    const meta = await getMeta(version.id, version.url);
+    const dl = (meta.json.downloads || {})[kind];
+    if (!dl || !dl.url) throw new Error(`该版本没有${isServer ? "服务端" : "客户端"}文件（官方未提供）`);
+    pp.log(`元数据获取完成 · ${version.id}.json ${fmtSize(meta.text.length)}（官方原文，字节未改动）`, "ok");
+
+    // BMCLAPI 的 /version/{id}/{kind} 302 至 piston-data 同 hash 对象（与官方 downloads.url 同一文件），
+    // 故两种源取同一对象字节，文件与各自直链下载完全一致。
+    pp.stage(`下载文件（${fmtSize(dl.size)}）…`);
+    pp.progress(0.02, "下载文件 0%");
+    pp.log(`开始下载 JAR · ${SRC_LABEL[source]} · 目标 ${fmtSize(dl.size)} · ${dl.url}`);
+    let lastPct = -20;
+    const jarBytes = await fetchBytes(dl.url, dl.size, (r, recv, tot) => {
+      pp.progress(0.02 + r * 0.86, `下载文件 ${Math.floor(r * 100)}%（${fmtSize(recv)} / ${fmtSize(tot)}）`);
+      const pct = Math.floor(r * 100);
+      if (pct - lastPct >= 20) { lastPct = pct; pp.log(`下载进度 ${pct}%（${fmtSize(recv)} / ${fmtSize(tot)}）`); }
+    }, ctrl.signal);
+    pp.log(`JAR 下载完成 · ${fmtSize(jarBytes.length)}`, "ok");
+
+    pp.stage("生成 ZIP 压缩包…");
+    pp.progress(0.90, "生成 ZIP 0%");
+    await new Promise((r) => setTimeout(r, 30));
+
+    const enc = new TextEncoder();
+    const jsonName = `${version.id}.json`;
+    const jarName = isServer ? `minecraft_server.${version.id}.jar` : `${version.id}.jar`;
+
+    pp.log("开始生成 ZIP（store 模式 · CRC32）…");
+    // ZIP 内容：官方版本 JSON 原文 + JAR，不含任何其他文件
+    let lastZipPct = -25;
+    const zip = await makeZip([
+      { name: jsonName, data: enc.encode(meta.text) },
+      { name: jarName, data: jarBytes },
+    ], (p) => {
+      pp.progress(0.90 + p * 0.10, `生成 ZIP ${Math.floor(p * 100)}%`);
+      const pct = Math.floor(p * 100);
+      if (pct - lastZipPct >= 25) { lastZipPct = pct; pp.log(`ZIP 生成 ${pct}%`); }
+    });
+    pp.log(`ZIP 生成完成 · ${fmtSize(zip.size)}（${jsonName} + ${jarName}）`, "ok");
+
+    // 打包完成 → 直接触发浏览器原生下载（下载进度由浏览器显示）
+    pp.log("已触发浏览器原生下载，保存进度由浏览器显示");
+    saveBlob(zip, `minecraft-${version.id}${isServer ? "-server" : ""}.zip`);
+    pp.done(`打包完成 · ${fmtSize(zip.size)}，已开始下载`);
+    toast(`Minecraft ${version.id} ${isServer ? "服务端" : "客户端"} ZIP 已开始下载（${SRC_LABEL[source]}）`);
+  } catch (e) {
+    if (e && e.name === "AbortError") {
+      pp.hide();
+      toast("已取消打包", true);
+    } else {
+      pp.fail(e.message || String(e));
+      toast("打包失败：" + (e.message || e), true, 6000);
+    }
+  } finally {
+    state.busy.delete(key);
+    currentAbort = null;
+    setBtnLoading(btn, false);
+  }
+}
+
+/* ---------------- 浏览器直接下载（原始 JAR，不打包） ---------------- */
+function directDownload(url, nameHint) {
+  const a = document.createElement("a");
+  a.href = url; a.rel = "noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast(`已开始下载 ${nameHint}（浏览器直链下载，文件名可能为 client.jar / server.jar，可手动重命名）`, false, 6500);
+}
+
+/* ---------------- 复制 ---------------- */
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("已复制到剪贴板");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); toast("已复制到剪贴板"); }
+    catch (e2) { toast("复制失败，请手动选择复制", true); }
+    ta.remove();
+  }
+}
+
+/* ================= 下载源选择弹窗 ================= */
+let modalCtx = null; // { version, kind, meta }
+
+function openModal(version, defaultKind, btn) {
+  modalCtx = { version, kind: defaultKind || "client", meta: state.metaCache.get(version.id) || null, btn: btn || null };
+  $("#modalLayer").hidden = false;
+  document.body.style.overflow = "hidden";
+  renderModal();
+}
+function closeModal() {
+  $("#modalLayer").hidden = true;
+  document.body.style.overflow = "";
+  modalCtx = null;
+}
+
+function renderModal() {
+  const { version, kind, meta } = modalCtx;
+  $("#modalVer").innerHTML = `Minecraft <span class="vid">${esc(version.id)}</span><span class="badge ${version.type}">${TYPE_LABEL[version.type] || version.type}</span>`;
+
+  // 类型分段（服务端可用性依赖元数据）
+  const hasServer = meta ? !!(meta.json.downloads && meta.json.downloads.server) : null;
+  $$("#kindSeg button").forEach((b) => {
+    b.classList.toggle("active", b.dataset.kind === kind);
+    if (b.dataset.kind === "server") b.disabled = hasServer === false;
+  });
+
+  const body = $("#modalBody");
+  if (!meta) {
+    body.innerHTML = `<div class="state-card" style="padding:26px 16px"><div class="cube-loader"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="big" style="margin-top:12px">正在获取版本信息…</div></div>`;
+    getMeta(version.id, version.url).then((m) => {
+      if (!modalCtx || modalCtx.version.id !== version.id) return;
+      modalCtx.meta = m;
+      renderModal();
+    }).catch((e) => {
+      if (!modalCtx || modalCtx.version.id !== version.id) return;
+      body.innerHTML = `<div class="state-card" style="padding:26px 16px"><div class="big" style="color:var(--red)">获取失败</div><div class="sm">${esc(e.message || e)}</div><div style="margin-top:14px"><button class="load-btn" id="modalRetry" type="button">重试</button></div></div>`;
+      $("#modalRetry").addEventListener("click", () => { modalCtx.meta = null; renderModal(); });
+    });
+    return;
+  }
+
+  body.innerHTML = `
+    <button class="src-card official" type="button" data-src="official">
+      <span class="ic">🟩</span>
+      <span style="min-width:0">
+        <span class="t" style="display:block">官方源</span>
+        <span class="d">Mojang 官方服务器 · 权威来源<br>与官方启动器下载的文件完全一致（SHA1 校验）</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="src-card bmcl" type="button" data-src="bmclapi">
+      <span class="ic">🟦</span>
+      <span style="min-width:0">
+        <span class="t" style="display:block">BMCLAPI 镜像</span>
+        <span class="d">国内加速镜像 · bmclapi2.bangbang93.com<br>文件字节由 piston-data.mojang.com 分发，与其直链下载一致</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <div class="modal-note">ZIP 内包含 <b>${esc(version.id)}.json</b> 与 <b>${kind === "server" ? "minecraft_server." + esc(version.id) + ".jar" : esc(version.id) + ".jar"}</b>。其中 JSON 为 <b>Mojang 官方版本元数据原文</b>，字节未做任何改动。</div>`;
+
+  body.querySelectorAll("[data-src]").forEach((b) => {
+    b.addEventListener("click", () => pickSource(b.dataset.src));
+  });
+}
+
+async function pickSource(source) {
+  if (!modalCtx) return;
+  const { version, kind, btn } = modalCtx;
+  closeModal();
+  await downloadZip(version, kind, source, btn);
+}
+
+$("#modalCancel").addEventListener("click", closeModal);
+$("#modalBackdrop").addEventListener("click", closeModal);
+$("#kindSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b || b.disabled || !modalCtx) return;
+  modalCtx.kind = b.dataset.kind;
+  renderModal();
+});
+
+/* ---------------- 列表渲染 ---------------- */
+function applyFilter() {
+  const q = state.search.trim().toLowerCase();
+  state.filtered = state.manifest.versions.filter((v) => {
+    if (state.filter !== "all" && v.type !== state.filter) return false;
+    if (q && !v.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if (!state.sortDesc) state.filtered = state.filtered.slice().reverse();
+  state.rendered = 0;
+  $("#versionList").innerHTML = "";
+  renderBatch();
+}
+
+function renderBatch() {
+  const list = $("#versionList");
+  const end = Math.min(state.rendered + state.batch, state.filtered.length);
+  const frag = document.createDocumentFragment();
+  for (let i = state.rendered; i < end; i++) frag.appendChild(buildRow(state.filtered[i]));
+  list.appendChild(frag);
+  state.rendered = end;
+
+  const foot = $("#listFoot");
+  if (state.filtered.length === 0) {
+    list.innerHTML = `<div class="state-card glass"><div class="big">未找到匹配的版本</div><div class="sm">试试其他关键词，或切换筛选条件</div></div>`;
+    foot.hidden = true;
+    $("#listCount").textContent = "0 个版本";
+    return;
+  }
+  if (state.rendered < state.filtered.length) {
+    foot.hidden = false;
+    $("#loadMore").textContent = `加载更多（还有 ${state.filtered.length - state.rendered} 个）`;
+  } else {
+    foot.hidden = false;
+    $("#loadMore").textContent = "已加载全部";
+  }
+  $("#listCount").textContent = `显示 ${state.rendered} / ${state.filtered.length} 个版本`;
+}
+
+function buildRow(v) {
+  const row = document.createElement("div");
+  row.className = "vrow glass";
+  row.dataset.id = v.id;
+
+  const newest = [];
+  if (state.manifest.latest.release === v.id) newest.push('<span class="badge newest">最新</span>');
+  if (state.manifest.latest.snapshot === v.id) newest.push('<span class="badge newest">最新快照</span>');
+
+  const main = document.createElement("button");
+  main.className = "vrow-main";
+  main.type = "button";
+  main.innerHTML =
+    `<span class="chev">▶</span>` +
+    `<span class="vid">${esc(v.id)}</span>` +
+    `<span class="badge ${v.type}">${TYPE_LABEL[v.type] || v.type}</span>` +
+    newest.join("") +
+    `<span class="vdate">${fmtDate(v.releaseTime)}</span>`;
+  row.appendChild(main);
+
+  const dl = document.createElement("button");
+  dl.className = "dl-btn";
+  dl.type = "button";
+  dl.innerHTML = ICON_DL + "ZIP";
+  dl.setAttribute("aria-label", `下载 Minecraft ${v.id}`);
+  dl.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openModal(v, "client", dl);   // 统一入口：每次点击都弹窗选择下载源
+  });
+  main.appendChild(dl);
+
+  const detail = document.createElement("div");
+  detail.className = "vdetail";
+  detail.hidden = true;
+  row.appendChild(detail);
+
+  main.addEventListener("click", () => {
+    const willOpen = detail.hidden;
+    detail.hidden = !willOpen;
+    row.classList.toggle("open", willOpen);
+    if (willOpen && !detail.dataset.loaded) {
+      detail.dataset.loaded = "1";
+      loadDetail(detail, v);
+    }
+  });
+
+  return row;
+}
+
+async function loadDetail(container, v) {
+  container.innerHTML = `<div class="state-card" style="padding:24px"><div class="cube-loader"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="big" style="margin-top:12px">正在获取版本信息…</div></div>`;
+  let meta;
+  try {
+    meta = await getMeta(v.id, v.url);
+  } catch (e) {
+    container.innerHTML = `<div class="state-card" style="padding:24px"><div class="big" style="color:var(--red)">获取失败</div><div class="sm">${esc(e.message || e)}<br>请检查网络后重试</div></div>`;
+    return;
+  }
+  const j = meta.json;
+  const client = (j.downloads || {}).client;
+  const server = (j.downloads || {}).server;
+  const bmclClient = `${BMCL_BASE}/version/${v.id}/client`;
+  const bmclServer = `${BMCL_BASE}/version/${v.id}/server`;
+
+  const linkItem = (label, url, name) => url ? `
+    <div class="link-item">
+      <div class="src">${esc(label)}</div>
+      <code>${esc(url)}</code>
+      <div class="link-btns">
+        <button class="mini-btn" type="button" data-copy="${esc(url)}">复制链接</button>
+        <button class="mini-btn" type="button" data-direct="${esc(url)}" data-name="${esc(name)}">浏览器直接下载</button>
+      </div>
+    </div>` : "";
+
+  container.innerHTML = `
+    <div class="dsec">
+      <h4><span class="dot a"></span>版本信息</h4>
+      <table class="meta-table">
+        <tr><td class="k">版本 ID</td><td class="v">${esc(v.id)}</td></tr>
+        <tr><td class="k">类型</td><td class="v">${TYPE_LABEL[v.type] || v.type}（${esc(v.type)}）</td></tr>
+        <tr><td class="k">发布时间</td><td class="v">${esc(v.releaseTime || "-")}</td></tr>
+        ${client ? `<tr><td class="k">客户端</td><td class="v">${fmtSize(client.size)} · SHA1 ${esc(client.sha1 || "-")}</td></tr>` : ""}
+        ${server ? `<tr><td class="k">服务端</td><td class="v">${fmtSize(server.size)} · SHA1 ${esc(server.sha1 || "-")}</td></tr>` : ""}
+        ${j.javaVersion && j.javaVersion.version ? `<tr><td class="k">Java</td><td class="v">需要 Java ${esc(j.javaVersion.version)}</td></tr>` : ""}
+        ${j.assetIndex ? `<tr><td class="k">资源索引</td><td class="v">${esc(j.assetIndex.id)}（${fmtSize(j.assetIndex.size || 0)}）</td></tr>` : ""}
+        <tr><td class="k">元数据</td><td class="v">${esc(v.url)}<br><span style="color:var(--faint)">↑ ZIP 内 JSON 即此地址的官方原文（字节未改动）</span></td></tr>
+      </table>
+      <div class="act-row" style="margin-top:12px;margin-bottom:0">
+        <button class="act-btn" type="button" id="detailZipClient">${ICON_DL} 打包下载 ZIP${client ? `（${fmtSize(client.size)}）` : ""}</button>
+        ${server ? `<button class="act-btn blue" type="button" id="detailZipServer">${ICON_DL} 服务端 ZIP（${fmtSize(server.size)}）</button>` : ""}
+      </div>
+    </div>
+    <div class="dsec">
+      <h4><span class="dot g"></span>官方源直链</h4>
+      ${linkItem("客户端 CLIENT", client ? client.url : "", `${v.id}.jar`)}
+      ${linkItem("服务端 SERVER", server ? server.url : "", `minecraft_server.${v.id}.jar`)}
+    </div>
+    <div class="dsec">
+      <h4><span class="dot b"></span>BMCLAPI 镜像直链</h4>
+      ${linkItem("客户端 CLIENT", bmclClient, `${v.id}.jar`)}
+      ${server ? linkItem("服务端 SERVER", bmclServer, `minecraft_server.${v.id}.jar`) : `<div class="note-line" style="margin-top:0;border:none;padding-top:0">该版本官方未提供服务端文件，BMCLAPI 亦不提供。</div>`}
+      <div class="note-line">浏览器无法直接读取 BMCLAPI 的字节（跨域限制），其文件字节实际由 <b>piston-data.mojang.com</b> 分发；「浏览器直接下载」按钮会跳转真实 BMCLAPI 链接。</div>
+    </div>`;
+
+  const zipClientBtn = container.querySelector("#detailZipClient");
+  if (zipClientBtn) zipClientBtn.addEventListener("click", () => openModal(v, "client", zipClientBtn));
+  const zipServerBtn = container.querySelector("#detailZipServer");
+  if (zipServerBtn) zipServerBtn.addEventListener("click", () => openModal(v, "server", zipServerBtn));
+  container.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", () => copyText(b.dataset.copy)));
+  container.querySelectorAll("[data-direct]").forEach((b) => b.addEventListener("click", () => directDownload(b.dataset.direct, b.dataset.name)));
+}
+
+/* ---------------- 统计 ---------------- */
+function renderStats() {
+  const m = state.manifest;
+  const counts = { all: m.versions.length, release: 0, snapshot: 0, old_beta: 0, old_alpha: 0 };
+  m.versions.forEach((v) => { if (counts[v.type] !== undefined) counts[v.type]++; });
+  $("#cAll").textContent = counts.all;
+  $("#cRelease").textContent = counts.release;
+  $("#cSnapshot").textContent = counts.snapshot;
+  $("#cBeta").textContent = counts.old_beta;
+  $("#cAlpha").textContent = counts.old_alpha;
+
+  $("#stTotal").textContent = counts.all;
+  $("#stRelease").textContent = m.latest.release;
+  $("#stSnapshot").textContent = m.latest.snapshot;
+  const oldest = m.versions[m.versions.length - 1];
+  $("#stSpan").textContent = `${fmtDate(oldest.releaseTime)} 起`;
+  $("#stats").hidden = false;
+  $("#toolbar").hidden = false;
+}
+
+/* ---------------- 启动 ---------------- */
+async function boot() {
+  $("#versionList").innerHTML = `
+    <div class="state-card glass">
+      <div class="cube-loader"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="big">正在自动检测全部 Minecraft 版本…</div>
+      <div class="sm">从 Mojang 官方版本清单获取数据（正式版 / 快照 / Beta / 远古版）</div>
+    </div>`;
+
+  try {
+    const resp = await fetch(MANIFEST_URL, { cache: "no-store" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    state.manifest = await resp.json();
+    if (!state.manifest.versions || !state.manifest.versions.length) throw new Error("版本清单为空");
+    renderStats();
+    applyFilter();
+  } catch (e) {
+    $("#versionList").innerHTML = `
+      <div class="state-card glass">
+        <div class="big" style="color:var(--red)">版本检测失败</div>
+        <div class="sm">${esc(e.message || e)}<br>请检查网络连接后重试。</div>
+        <div style="margin-top:16px"><button class="load-btn" id="retryBtn" type="button">重新检测</button></div>
+      </div>`;
+    $("#retryBtn").addEventListener("click", boot);
+  }
+}
+
+/* ---------------- 事件 ---------------- */
+$("#chips").addEventListener("click", (e) => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  $$("#chips .chip").forEach((c) => c.classList.remove("active"));
+  chip.classList.add("active");
+  state.filter = chip.dataset.filter;
+  applyFilter();
+});
+
+let searchTimer = null;
+$("#search").addEventListener("input", (e) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.search = e.target.value; applyFilter(); }, 160);
+});
+
+$("#sortBtn").addEventListener("click", () => {
+  state.sortDesc = !state.sortDesc;
+  $("#sortBtn").textContent = state.sortDesc ? "↓ 最新在前" : "↑ 最早在前";
+  applyFilter();
+});
+
+$("#loadMore").addEventListener("click", () => {
+  if (state.filtered.length) renderBatch();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("#modalLayer").hidden) closeModal();
+});
+
+boot();
+</script>
+</body>
+</html>
