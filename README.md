@@ -26,9 +26,8 @@
 | 分类 | 收录内容 |
 |---|---|
 | 🎭 愚人节（13 个） | 2.0（蓝/红/紫/预览版）、15w14a、1.RV-Pre1、3D Shareware v1.34、20w14∞、22w13oneBlockAtATime、23w13a_or_b、24w14potato、25w14craftmine、26w14a |
-| 🔒 未发布（22 个） | **Combat Test 1–8c 全系列 12 个**（1.14_combat-212796 = CT 1、1.14_combat-0 = CT 2、1.14_combat-3 = CT 3、1.15_combat-1 = CT 4、1.15_combat-6 = CT 5、1.16_combat-0 = CT 6、1.16_combat-1/-2/-3 = CT 7/7b/7c、1.16_combat-4/-5/-6 = CT 8/8b/8c；其中 7 / 7b / 8 为私有测试版）、1.18 / 1.19 实验快照、Beta 1.2_02 开发者版（20110517）、MINECON 2011 展示版（1.0.0-tominecon）等 |
-| 🧩 其他特别版（3 个） | Minecraft 4K（4k-1 / 4k-2）、PC Gamer 演示版（b1.3-pcgamer） |
-| 📜 远古未列出（171 个） | 官方清单之外的 11w–13w 快照、Alpha / Beta 零散版本 |
+| 🔒 未发布（194 个） | **Combat Test 1–8c 全系列 12 个**（1.14_combat-212796 = CT 1、1.14_combat-0 = CT 2、1.14_combat-3 = CT 3、1.15_combat-1 = CT 4、1.15_combat-6 = CT 5、1.16_combat-0 = CT 6、1.16_combat-1/-2/-3 = CT 7/7b/7c、1.16_combat-4/-5/-6 = CT 8/8b/8c；其中 7 / 7b / 8 为私有测试版）、1.18 / 1.19 实验快照 8 个、Beta 1.2_02 开发者版（20110517）、MINECON 2011 展示版（1.0.0-tominecon）、PC Gamer 演示版（b1.3-pcgamer），以及官方清单之外的 171 个远古版本（11w–13w 周快照、Alpha / Beta / Classic / Indev / Infdev 零散版本） |
+| 🧩 其他特别版（2 个） | Minecraft 4K（4k-1 / 4k-2） |
 
 > 愚人节版本分类依据 [Minecraft Wiki](https://minecraft.wiki/w/Java_Edition_versions#April_Fools'_versions)。注意 20w14a / 22w13a / 23w13a / 24w14a 是愚人节当周发布的**常规快照**（Wiki 有消歧义说明），不属于愚人节版本；15w14a 与 26w14a 为真正的愚人节版本。
 
