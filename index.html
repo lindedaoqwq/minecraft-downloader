@@ -151,13 +151,13 @@ a{color:var(--blue);text-decoration:none}
 .vrow:hover{border-color:#c4d4ef}
 .vrow.open{border-color:var(--blue)}
 .vrow-main{
-  width:100%;display:flex;align-items:center;gap:10px;
+  width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
   background:none;border:none;text-align:left;
   padding:12px 12px 12px 14px;min-height:52px;
 }
 .chev{color:var(--faint);font-size:11px;transition:transform .18s;flex:none}
 .vrow.open .chev{transform:rotate(90deg);color:var(--blue)}
-.vid{font-size:15px;font-weight:700;color:var(--text)}
+.vid{font-size:15px;font-weight:700;color:var(--text);min-width:0;flex:0 1 auto;overflow-wrap:anywhere}
 .badge{
   font-size:10.5px;border-radius:4px;padding:2px 7px;flex:none;
   border:1.5px solid;line-height:1.5;
@@ -173,7 +173,7 @@ a{color:var(--blue);text-decoration:none}
 .vdate{margin-left:auto;font-size:11.5px;color:var(--faint);flex:none}
 @media (max-width:560px){.vdate{display:none}}
 .dl-btn{
-  flex:none;display:inline-flex;align-items:center;gap:5px;
+  flex:none;display:inline-flex;align-items:center;gap:5px;margin-left:auto;
   font-size:12.5px;font-family:var(--pixel);font-weight:700;
   color:#fff;background:var(--green);border:2px solid var(--green);
   border-radius:6px;padding:7px 13px;min-height:38px;
@@ -1083,7 +1083,7 @@ function buildRow(v) {
   main.type = "button";
   main.innerHTML =
     `<span class="chev">▶</span>` +
-    `<span class="vid">${esc(v.id)}</span>` +
+    `<span class="vid" title="${esc(v.id)}">${esc(v.id)}</span>` +
     `<span class="badge ${v.type}">${TYPE_LABEL[v.type] || v.type}</span>` +
     newest.join("") +
     `<span class="vdate">${fmtDate(v.releaseTime)}</span>`;
