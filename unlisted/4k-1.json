@@ -1,0 +1,13 @@
+{
+  "id": "4k-1",
+  "time": "2009-12-02T00:00:00+00:00",
+  "releaseTime": "2009-12-02T00:00:00+00:00",
+  "type": "standalone",
+  "downloads": {
+    "client": {
+      "sha1": "641242f2b11f2e8e8049e2e3d41e84dd66498aeb",
+      "size": 2107,
+      "url": "https://vault.omniarchive.uk/archive/java/misc/4k-011742.jar"
+    }
+  }
+}

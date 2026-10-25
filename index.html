@@ -167,8 +167,10 @@ a{color:var(--blue);text-decoration:none}
 .badge.old_beta{color:var(--amber);border-color:#f0d9ae;background:#fdf7ea}
 .badge.old_alpha{color:#9b59b6;border-color:#dcc3e8;background:#f8f1fb}
 .badge.pending{color:#6b7ba0;border-color:#ccd6ea;background:#f2f5fb}
+.badge.standalone{color:#8a6d3b;border-color:#e8d9b8;background:#fdf8ec}
 .badge.af{color:#d0619f;border-color:#f0c2dc;background:#fdf1f8}
 .badge.unrel{color:#3f6bb5;border-color:#c0d0ec;background:#edf3fc}
+.badge.other{color:#2f7d6b;border-color:#bfe0d6;background:#eef8f4}
 .badge.newest{color:#fff;border-color:var(--blue);background:var(--blue)}
 .vdate{margin-left:auto;font-size:11.5px;color:var(--faint);flex:none}
 @media (max-width:560px){.vdate{display:none}}
@@ -456,6 +458,7 @@ footer .flinks a{color:var(--blue)}
       <button class="chip" data-filter="old_alpha">远古版<span class="n" id="cAlpha"></span></button>
       <button class="chip" data-filter="april_fools">愚人节<span class="n" id="cAF"></span></button>
       <button class="chip" data-filter="unreleased">未发布<span class="n" id="cUnreleased"></span></button>
+      <button class="chip" data-filter="other">其他特别版<span class="n" id="cOther"></span></button>
     </div>
     <div class="toolbar-row2">
       <div class="search-box">
@@ -473,8 +476,8 @@ footer .flinks a{color:var(--blue)}
   </div>
 
   <footer>
-    <p>版本数据来自 Mojang 官方版本清单 <code>launchermeta.mojang.com</code>（自动检测）+ 社区整理的未列出版本清单（<code>zkitefly/unlisted-versions-of-minecraft</code>，源自 PrismLauncher/meta 与 Minecraft Wiki）。ZIP 内的 JSON 均为<b>官方版本元数据原文</b>（字节未做任何改动，与官方启动器下载的文件一致）；JAR 与官方文件 SHA1 相同。</p>
-    <p><b>愚人节版本</b>（2.0 / 15w14a / 1.RV-Pre1 / 3D Shareware v1.34 / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine / 26w14a）与<b>未发布版本</b>（Combat Test 1–6、1.18 / 1.19 实验快照等）不在官方启动器列表内，此处一并提供下载。愚人节版本分类依据 Minecraft Wiki。</p>
+    <p>版本数据来自 Mojang 官方版本清单 <code>launchermeta.mojang.com</code>（自动检测）+ 社区整理的未列出版本清单（<code>zkitefly/unlisted-versions-of-minecraft</code> 与 <code>Omniarchive</code> 社区档案，源自 PrismLauncher/meta、Minecraft Wiki 与 Omniarchive）。ZIP 内的 JSON 为<b>官方版本元数据原文</b>（字节未做任何改动，与官方启动器下载的文件一致；社区整理元数据的条目已在详情页注明）；JAR 与官方文件 SHA1 相同。</p>
+    <p><b>愚人节版本</b>（2.0 / 15w14a / 1.RV-Pre1 / 3D Shareware v1.34 / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine / 26w14a）、<b>未发布版本</b>（Combat Test 1–6、1.18 / 1.19 实验快照、Beta 1.2_02 开发者版、MINECON 2011 展示版等）与<b>其他特别版</b>（Minecraft 4K、PC Gamer 演示版）不在官方启动器列表内，此处一并提供下载。愚人节版本分类依据 Minecraft Wiki；Omniarchive 独家版本由 <code>vault.omniarchive.uk</code> 存档分发。</p>
     <p>BMCLAPI 镜像由 bangbang93 提供：<code>bmclapi2.bangbang93.com</code> · 本页面为第三方工具，与 Mojang / Microsoft 无关联。</p>
     <p class="flinks"><a href="https://github.com/lindedaoqwq/minecraft-downloader" target="_blank" rel="noopener">GitHub 仓库</a></p>
   </footer>
@@ -512,8 +515,10 @@ footer .flinks a{color:var(--blue)}
 /* =====================================================================
  * Minecraft 全版本下载器
  * - 版本清单: https://launchermeta.mojang.com/mc/game/version_manifest.json（官方，CORS 可达）
- * - 特别版本: special.json（本站托管，来自 zkitefly/unlisted-versions-of-minecraft）
- *   含官方清单中的愚人节版本标记 + 官方清单外的未列出版本（Combat Test / 实验快照 / 远古版本 / 2.0）
+ * - 特别版本: special.json（本站托管，来自 zkitefly/unlisted-versions-of-minecraft 与 Omniarchive 社区档案）
+ *   含官方清单中的愚人节版本标记 + 官方清单外的未列出版本（Combat Test / 实验快照 / 远古版本 / 2.0 系列）
+ *   + Omniarchive 独家存档版本（2.0-preview / MINECON 2011 展示版 / PC Gamer 演示版 / Minecraft 4K 等）
+ *   jsonSource: community 的条目为社区整理元数据（原版无官方 JSON），jarHost: omniarchive 的 jar 由 vault.omniarchive.uk 分发
  * - 版本 JSON: 清单内 version.url（piston-meta.mojang.com 或本站 unlisted/，均为官方原文，字节不改动）
  * - 官方源 JAR: 版本 JSON 内 downloads.{client,server}.url（piston-data / launcher.mojang.com）
  * - BMCLAPI 源: https://bmclapi2.bangbang93.com/version/{id}/{client|server}
@@ -525,9 +530,9 @@ const MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.j
 const SPECIAL_URL = "special.json";
 const BMCL_BASE = "https://bmclapi2.bangbang93.com";
 const SRC_LABEL = { official: "官方源", bmclapi: "BMCLAPI 镜像" };
-const SPECIAL_LABEL = { april_fools: "愚人节", unreleased: "未发布" };
+const SPECIAL_LABEL = { april_fools: "愚人节", unreleased: "未发布", other: "其他特别版" };
 
-const TYPE_LABEL = { release: "正式版", snapshot: "快照", old_beta: "Beta", old_alpha: "远古版", pending: "实验版" };
+const TYPE_LABEL = { release: "正式版", snapshot: "快照", old_beta: "Beta", old_alpha: "远古版", pending: "实验版", standalone: "独立版" };
 
 const state = {
   manifest: null,
@@ -804,8 +809,9 @@ async function downloadZip(version, kind, source, btn) {
     pp.log(`获取版本元数据：${version.url}`);
     const meta = await getMeta(version.id, version.url);
     const dl = (meta.json.downloads || {})[kind];
-    if (!dl || !dl.url) throw new Error(`该版本没有${isServer ? "服务端" : "客户端"}文件（官方未提供）`);
-    pp.log(`元数据获取完成 · ${version.id}.json ${fmtSize(meta.text.length)}（官方元数据原文，字节未改动）`, "ok");
+    if (!dl || !dl.url) throw new Error(`该版本没有${isServer ? "服务端" : "客户端"}文件（未提供）`);
+    const isCommunity = version.jsonSource === "community";
+    pp.log(`元数据获取完成 · ${version.id}.json ${fmtSize(meta.text.length)}（${isCommunity ? "社区整理元数据" : "官方元数据原文，字节未改动"}）`, "ok");
 
     // BMCLAPI 的 /version/{id}/{kind} 302 至 piston-data 同 hash 对象（与官方 downloads.url 同一文件），
     // 故两种源取同一对象字节，文件与各自直链下载完全一致。
@@ -906,7 +912,7 @@ function closeModal() {
 function renderModal() {
   const { version, kind, meta } = modalCtx;
   const specialBadge = version.special
-    ? `<span class="badge ${version.special === "april_fools" ? "af" : "unrel"}">${SPECIAL_LABEL[version.special] || version.special}</span>`
+    ? `<span class="badge ${version.special === "april_fools" ? "af" : version.special === "unreleased" ? "unrel" : "other"}">${SPECIAL_LABEL[version.special] || version.special}</span>`
     : "";
   $("#modalVer").innerHTML = `Minecraft <span class="vid">${esc(version.id)}</span><span class="badge ${version.type}">${TYPE_LABEL[version.type] || version.type}</span>${specialBadge}`;
 
@@ -933,12 +939,14 @@ function renderModal() {
   }
 
   const isUnlisted = !/^https?:/.test(version.url);
+  const isCommunity = version.jsonSource === "community";          // 社区整理元数据（原版无官方 JSON）
+  const isOmni = version.jarHost === "omniarchive";                 // jar 由 Omniarchive 档案分发
   const cards = [
     `<button class="src-card official" type="button" data-src="official">
-      <span class="ic">🟩</span>
+      <span class="ic">${isOmni ? "🟪" : "🟩"}</span>
       <span style="min-width:0">
-        <span class="t" style="display:block">官方源</span>
-        <span class="d">Mojang 官方服务器 · 权威来源<br>与官方启动器下载的文件完全一致（SHA1 校验）</span>
+        <span class="t" style="display:block">${isOmni ? "存档源（Omniarchive）" : "官方源"}</span>
+        <span class="d">${isOmni ? "Omniarchive 社区档案 · vault.omniarchive.uk<br>原版未提供官方下载，文件由社区存档分发" : "Mojang 官方服务器 · 权威来源<br>与官方启动器下载的文件完全一致（SHA1 校验）"}</span>
       </span>
       <span class="arrow">›</span>
     </button>`,
@@ -954,7 +962,10 @@ function renderModal() {
     </button>`);
   }
   const jarName = kind === "server" ? "minecraft_server." + esc(version.id) + ".jar" : esc(version.id) + ".jar";
-  cards.push(`<div class="modal-note">ZIP 内包含 <b>${esc(version.id)}.json</b> 与 <b>${jarName}</b>。其中 JSON 为 <b>${isUnlisted ? "社区存档的 Mojang 官方版本元数据" : "Mojang 官方版本元数据"}原文</b>，字节未做任何改动。${isUnlisted ? "该版本不在官方启动器列表内（BMCLAPI 亦未收录），仅可从官方源获取。" : ""}</div>`);
+  const jsonDesc = isCommunity
+    ? "社区整理的版本元数据（该版本原版无官方 JSON 发布，内容依据 Minecraft Wiki）"
+    : isUnlisted ? "社区存档的 Mojang 官方版本元数据原文，字节未做任何改动" : "Mojang 官方版本元数据原文，字节未做任何改动";
+  cards.push(`<div class="modal-note">ZIP 内包含 <b>${esc(version.id)}.json</b> 与 <b>${jarName}</b>。其中 JSON 为 <b>${jsonDesc}</b>。${isUnlisted ? `该版本不在官方启动器列表内（BMCLAPI 亦未收录），仅可从${isOmni ? "存档源" : "官方源"}获取。` : ""}</div>`);
 
   body.innerHTML = cards.join("");
 
@@ -1032,6 +1043,7 @@ function applyFilter() {
   state.filtered = state.manifest.versions.filter((v) => {
     if (state.filter === "april_fools") { if (v.special !== "april_fools") return false; }
     else if (state.filter === "unreleased") { if (v.special !== "unreleased") return false; }
+    else if (state.filter === "other") { if (v.special !== "other") return false; }
     else if (state.filter !== "all" && v.type !== state.filter) return false;
     if (q && !v.id.toLowerCase().includes(q)) return false;
     return true;
@@ -1077,6 +1089,7 @@ function buildRow(v) {
   if (state.manifest.latest.snapshot === v.id) newest.push('<span class="badge newest">最新快照</span>');
   if (v.special === "april_fools") newest.push('<span class="badge af">愚人节</span>');
   if (v.special === "unreleased") newest.push('<span class="badge unrel">未发布</span>');
+  if (v.special === "other") newest.push('<span class="badge other">其他特别版</span>');
 
   const main = document.createElement("button");
   main.className = "vrow-main";
@@ -1131,6 +1144,8 @@ async function loadDetail(container, v) {
   const client = (j.downloads || {}).client;
   const server = (j.downloads || {}).server;
   const isUnlisted = !/^https?:/.test(v.url);   // 本站托管的未列出版本（JSON 由本站存档分发）
+  const isCommunity = v.jsonSource === "community";   // 社区整理元数据（原版无官方 JSON）
+  const isOmni = v.jarHost === "omniarchive";         // jar 由 Omniarchive 档案分发
   const bmclClient = `${BMCL_BASE}/version/${v.id}/client`;
   const bmclServer = `${BMCL_BASE}/version/${v.id}/server`;
 
@@ -1155,7 +1170,7 @@ async function loadDetail(container, v) {
         ${server ? `<tr><td class="k">服务端</td><td class="v">${fmtSize(server.size)} · SHA1 ${esc(server.sha1 || "-")}</td></tr>` : ""}
         ${j.javaVersion && j.javaVersion.version ? `<tr><td class="k">Java</td><td class="v">需要 Java ${esc(j.javaVersion.version)}</td></tr>` : ""}
         ${j.assetIndex ? `<tr><td class="k">资源索引</td><td class="v">${esc(j.assetIndex.id)}（${fmtSize(j.assetIndex.size || 0)}）</td></tr>` : ""}
-        <tr><td class="k">元数据</td><td class="v">${esc(v.url)}<br><span style="color:var(--faint)">↑ ZIP 内 JSON 即此地址的${isUnlisted ? "存档官方原始元数据" : "官方原文"}（字节未改动）</span></td></tr>
+        <tr><td class="k">元数据</td><td class="v">${esc(v.url)}<br><span style="color:var(--faint)">↑ ${isCommunity ? "ZIP 内 JSON 为社区整理的版本元数据（原版无官方 JSON 发布，内容依据 Minecraft Wiki）" : `ZIP 内 JSON 即此地址的${isUnlisted ? "存档官方原始元数据" : "官方原文"}（字节未改动）`}</span></td></tr>
       </table>
       <div class="act-row" style="margin-top:12px;margin-bottom:0">
         <button class="act-btn" type="button" id="detailZipClient">${ICON_DL} 打包下载 ZIP${client ? `（${fmtSize(client.size)}）` : ""}</button>
@@ -1163,14 +1178,14 @@ async function loadDetail(container, v) {
       </div>
     </div>
     <div class="dsec">
-      <h4>官方源直链</h4>
+      <h4>${isOmni ? "存档源直链（Omniarchive）" : "官方源直链"}</h4>
       ${linkItem("客户端 CLIENT", client ? client.url : "", `${v.id}.jar`)}
       ${linkItem("服务端 SERVER", server ? server.url : "", `minecraft_server.${v.id}.jar`)}
     </div>
     ${isUnlisted
       ? `<div class="dsec">
           <h4>BMCLAPI 镜像直链</h4>
-          <div class="note-line" style="margin-top:0;border:none;padding-top:0">BMCLAPI 仅镜像官方清单内的版本，未收录该版本（官方清单外的${v.special === "unreleased" ? "未发布" : "远古"}版本），请使用上方官方源直链下载。</div>
+          <div class="note-line" style="margin-top:0;border:none;padding-top:0">BMCLAPI 仅镜像官方清单内的版本，未收录该版本（官方清单外的${v.special === "unreleased" ? "未发布" : v.special === "other" ? "其他特别版" : "远古"}版本），请使用上方${isOmni ? "存档源" : "官方源"}直链下载。</div>
         </div>`
       : `<div class="dsec">
           <h4>BMCLAPI 镜像直链</h4>
@@ -1190,11 +1205,12 @@ async function loadDetail(container, v) {
 /* ---------------- 统计 ---------------- */
 function renderStats() {
   const m = state.manifest;
-  const counts = { all: m.versions.length, release: 0, snapshot: 0, old_beta: 0, old_alpha: 0, april_fools: 0, unreleased: 0 };
+  const counts = { all: m.versions.length, release: 0, snapshot: 0, old_beta: 0, old_alpha: 0, april_fools: 0, unreleased: 0, other: 0 };
   m.versions.forEach((v) => {
     if (counts[v.type] !== undefined) counts[v.type]++;
     if (v.special === "april_fools") counts.april_fools++;
     if (v.special === "unreleased") counts.unreleased++;
+    if (v.special === "other") counts.other++;
   });
   $("#cAll").textContent = counts.all;
   $("#cRelease").textContent = counts.release;
@@ -1203,11 +1219,12 @@ function renderStats() {
   $("#cAlpha").textContent = counts.old_alpha;
   $("#cAF").textContent = counts.april_fools;
   $("#cUnreleased").textContent = counts.unreleased;
+  $("#cOther").textContent = counts.other;
 
   $("#stTotal").textContent = counts.all;
   $("#stRelease").textContent = m.latest.release;
   $("#stSnapshot").textContent = m.latest.snapshot;
-  $("#stSpecial").textContent = `${counts.april_fools + counts.unreleased}`;
+  $("#stSpecial").textContent = `${counts.april_fools + counts.unreleased + counts.other}`;
   $("#heroCount").textContent = counts.all;
   $("#stats").hidden = false;
   $("#toolbar").hidden = false;
@@ -1219,7 +1236,7 @@ async function boot() {
     <div class="state-card">
       <div class="cube-loader"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="big" style="margin-top:12px">正在自动检测全部 Minecraft 版本…</div>
-      <div class="sm">从 Mojang 官方版本清单获取数据（正式版 / 快照 / Beta / 远古版 / 愚人节 / 未发布）</div>
+      <div class="sm">从 Mojang 官方版本清单获取数据（正式版 / 快照 / Beta / 远古版 / 愚人节 / 未发布 / 其他特别版）</div>
     </div>`;
 
   try {
