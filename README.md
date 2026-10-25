@@ -1,6 +1,6 @@
 # Minecraft 全版本下载器
 
-一键下载 Minecraft **全部 1120 个版本**（正式版 / 快照 / Beta / 远古版 / **愚人节版本** / **未发布版本** / **其他特别版**），支持**官方源**和**国内镜像**，自动打包为 ZIP。
+一键下载 Minecraft **全部 1142 个版本**（正式版 / 快照 / Beta / 远古版 / **愚人节版本** / **未发布版本** / **其他特别版**），支持**官方源**和**国内镜像**，自动打包为 ZIP。
 
 🔗 **在线使用**：https://lindedaoqwq.github.io/minecraft-downloader/
 
@@ -26,12 +26,12 @@
 | 分类 | 收录内容 |
 |---|---|
 | 🎭 愚人节（13 个） | 2.0（蓝/红/紫/预览版）、15w14a、1.RV-Pre1、3D Shareware v1.34、20w14∞、22w13oneBlockAtATime、23w13a_or_b、24w14potato、25w14craftmine、26w14a |
-| 🔒 未发布（194 个） | **Combat Test 1–8c 全系列 12 个**（1.14_combat-212796 = CT 1、1.14_combat-0 = CT 2、1.14_combat-3 = CT 3、1.15_combat-1 = CT 4、1.15_combat-6 = CT 5、1.16_combat-0 = CT 6、1.16_combat-1/-2/-3 = CT 7/7b/7c、1.16_combat-4/-5/-6 = CT 8/8b/8c；其中 7 / 7b / 8 为私有测试版）、1.18 / 1.19 实验快照 8 个、Beta 1.2_02 开发者版（20110517）、MINECON 2011 展示版（1.0.0-tominecon）、PC Gamer 演示版（b1.3-pcgamer），以及官方清单之外的 171 个远古版本（11w–13w 周快照、Alpha / Beta / Classic / Indev / Infdev 零散版本） |
+| 🔒 未发布（216 个） | **Combat Test 1–8c 全系列 12 个**（1.14_combat-212796 = CT 1、1.14_combat-0 = CT 2、1.14_combat-3 = CT 3、1.15_combat-1 = CT 4、1.15_combat-6 = CT 5、1.16_combat-0 = CT 6、1.16_combat-1/-2/-3 = CT 7/7b/7c、1.16_combat-4/-5/-6 = CT 8/8b/8c；其中 7 / 7b / 8 为私有测试版）、1.18 / 1.19 实验快照 8 个、Beta 1.2_02 开发者版（20110517）、MINECON 2011 展示版（1.0.0-tominecon）、PC Gamer 演示版（b1.3-pcgamer），以及官方清单之外的 193 个远古版本（11w–13w 周快照、Alpha / Beta / Classic / Indev / Infdev 零散版本，含 Omniarchive 收录的 22 个独家构建：史上首个多人测试版 Classic 0.0.15a、Beta 1.3 原始客户端、Alpha v1.2.4、Beta 1.8 / 1.9 预发布版早期构建等） |
 | 🧩 其他特别版（2 个） | Minecraft 4K（4k-1 / 4k-2） |
 
 > 愚人节版本分类依据 [Minecraft Wiki](https://minecraft.wiki/w/Java_Edition_versions#April_Fools'_versions)。注意 20w14a / 22w13a / 23w13a / 24w14a 是愚人节当周发布的**常规快照**（Wiki 有消歧义说明），不属于愚人节版本；15w14a 与 26w14a 为真正的愚人节版本。
 
-> **Omniarchive 独家版本**：2.0-preview（2013 年私下发给 YouTuber 的 2.0 预览版）、1.0.0-tominecon（MINECON 2011 展示版）、b1.2_02-20110517（开发者版）、b1.3-pcgamer（PC Gamer 杂志 214 期 DVD 演示版）、4k-1 / 4k-2（2009 年 Java 4K 竞赛作品）原版均无官方 JSON 发布，其 JSON 为社区整理元数据（详情页已注明），JAR 由 [vault.omniarchive.uk](https://vault.omniarchive.uk) 存档分发。
+> **Omniarchive 独家版本**：2.0-preview（2013 年私下发给 YouTuber 的 2.0 预览版）、1.0.0-tominecon（MINECON 2011 展示版）、b1.2_02-20110517（开发者版）、b1.3-pcgamer（PC Gamer 杂志 214 期 DVD 演示版）、4k-1 / 4k-2（2009 年 Java 4K 竞赛作品），以及 Omniarchive 全量比对 Mojang 官方清单后确认缺失的 22 个远古构建（史上首个多人测试版 Classic 0.0.15a、Beta 1.3 原始客户端 b1.3-1713 / 重传版 b1.3-1733、Alpha v1.2.4 = a1.2.3_05、Beta 1.8 / 1.9 预发布版早期构建等）——原版均无官方 JSON 发布，其 JSON 为社区整理元数据（详情页已注明），JAR 由 [vault.omniarchive.uk](https://vault.omniarchive.uk) 存档分发。
 
 ## ZIP 里有什么
 
