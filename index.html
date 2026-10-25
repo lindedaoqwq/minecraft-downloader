@@ -158,6 +158,7 @@ a{color:var(--blue);text-decoration:none}
 .chev{color:var(--faint);font-size:11px;transition:transform .18s;flex:none}
 .vrow.open .chev{transform:rotate(90deg);color:var(--blue)}
 .vid{font-size:15px;font-weight:700;color:var(--text);min-width:0;flex:0 1 auto;overflow-wrap:anywhere}
+.valias{font-size:12px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;flex:0 1 auto}
 .badge{
   font-size:10.5px;border-radius:4px;padding:2px 7px;flex:none;
   border:1.5px solid;line-height:1.5;
@@ -477,7 +478,7 @@ footer .flinks a{color:var(--blue)}
 
   <footer>
     <p>版本数据来自 Mojang 官方版本清单 <code>launchermeta.mojang.com</code>（自动检测）+ 社区整理的未列出版本清单（<code>zkitefly/unlisted-versions-of-minecraft</code> 与 <code>Omniarchive</code> 社区档案，源自 PrismLauncher/meta、Minecraft Wiki 与 Omniarchive）。ZIP 内的 JSON 为<b>官方版本元数据原文</b>（字节未做任何改动，与官方启动器下载的文件一致；社区整理元数据的条目已在详情页注明）；JAR 与官方文件 SHA1 相同。</p>
-    <p><b>愚人节版本</b>（2.0 / 15w14a / 1.RV-Pre1 / 3D Shareware v1.34 / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine / 26w14a）、<b>未发布版本</b>（Combat Test 1–6、1.18 / 1.19 实验快照、Beta 1.2_02 开发者版、MINECON 2011 展示版等）与<b>其他特别版</b>（Minecraft 4K、PC Gamer 演示版）不在官方启动器列表内，此处一并提供下载。愚人节版本分类依据 Minecraft Wiki；Omniarchive 独家版本由 <code>vault.omniarchive.uk</code> 存档分发。</p>
+    <p><b>愚人节版本</b>（2.0 / 15w14a / 1.RV-Pre1 / 3D Shareware v1.34 / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine / 26w14a）、<b>未发布版本</b>（<b>Combat Test 1–8c 全系列 12 个</b>，含 7 / 7b / 8 三个私有测试版；1.18 / 1.19 实验快照、Beta 1.2_02 开发者版、MINECON 2011 展示版等）与<b>其他特别版</b>（Minecraft 4K、PC Gamer 演示版）不在官方启动器列表内，此处一并提供下载。愚人节版本分类依据 Minecraft Wiki；Combat Test 各版本通称与下载哈希均对照 Minecraft Wiki 逐一核实；Omniarchive 独家版本由 <code>vault.omniarchive.uk</code> 存档分发。</p>
     <p>BMCLAPI 镜像由 bangbang93 提供：<code>bmclapi2.bangbang93.com</code> · 本页面为第三方工具，与 Mojang / Microsoft 无关联。</p>
     <p class="flinks"><a href="https://github.com/lindedaoqwq/minecraft-downloader" target="_blank" rel="noopener">GitHub 仓库</a></p>
   </footer>
@@ -914,7 +915,7 @@ function renderModal() {
   const specialBadge = version.special
     ? `<span class="badge ${version.special === "april_fools" ? "af" : version.special === "unreleased" ? "unrel" : "other"}">${SPECIAL_LABEL[version.special] || version.special}</span>`
     : "";
-  $("#modalVer").innerHTML = `Minecraft <span class="vid">${esc(version.id)}</span><span class="badge ${version.type}">${TYPE_LABEL[version.type] || version.type}</span>${specialBadge}`;
+  $("#modalVer").innerHTML = `Minecraft <span class="vid">${esc(version.id)}</span>${version.alias ? `<span class="valias">（${esc(version.alias)}）</span>` : ""}<span class="badge ${version.type}">${TYPE_LABEL[version.type] || version.type}</span>${specialBadge}`;
 
   // 类型分段（服务端可用性依赖元数据）
   const hasServer = meta ? !!(meta.json.downloads && meta.json.downloads.server) : null;
@@ -1040,14 +1041,52 @@ function mergeSpecial(manifest, special) {
 /* ---------------- 列表渲染 ---------------- */
 function applyFilter() {
   const q = state.search.trim().toLowerCase();
+  const qCompact = q.replace(/[\s_-]+/g, "");
+  // 搜索范围：内部 ID + 通称（alias）+ 中文通称（aliasZh）+ 类型标签（Beta / 快照 / 正式版 …）
+  const hayOf = (v) => (v.id + " " + (v.alias || "") + " " + (v.aliasZh || "") + " " + (TYPE_LABEL[v.type] || "")).toLowerCase();
+  // 严格匹配：整串短语命中（容忍空格/连字符/下划线差异，如 "combat7" ↔ "Combat Test 7" 之外的紧凑写法）
+  const matchStrict = (v) => {
+    const hay = hayOf(v);
+    return hay.includes(q) || hay.replace(/[\s_-]+/g, "").includes(qCompact);
+  };
+  // 宽松匹配：分词全部命中。纯数字词不被其他数字夹住，
+  // 避免 "combat 7" 因构建号 212796 含数字 7 而误命中 Combat Test 1
+  const isDigits = (s) => /^\d+$/.test(s);
+  const hitToken = (hayCompact, t) => {
+    const tt = t.replace(/[\s_-]+/g, "");
+    let idx = hayCompact.indexOf(tt);
+    while (idx !== -1) {
+      const before = idx > 0 ? hayCompact[idx - 1] : "";
+      const after = hayCompact[idx + tt.length] || "";
+      if (!(isDigits(tt) && /\d/.test(before) && /\d/.test(after))) return true;
+      idx = hayCompact.indexOf(tt, idx + 1);
+    }
+    return false;
+  };
+  const tokenSets = q ? [q.split(/[\s_-]+/).filter(Boolean)] : [];
+  if (tokenSets[0] && tokenSets[0].length === 1) {
+    const m = tokenSets[0][0].match(/^([a-z]+)(\d+)$/);   // 无空格口语写法 "combat7" → combat + 7
+    if (m) tokenSets.push([m[1], m[2]]);
+  }
+  const matchLoose = (v) => {
+    if (!tokenSets.length || !tokenSets[0].length) return false;
+    const hayCompact = hayOf(v).replace(/[\s_-]+/g, "");
+    return tokenSets.some((ts) => ts.every((t) => hitToken(hayCompact, t)));
+  };
   state.filtered = state.manifest.versions.filter((v) => {
     if (state.filter === "april_fools") { if (v.special !== "april_fools") return false; }
     else if (state.filter === "unreleased") { if (v.special !== "unreleased") return false; }
     else if (state.filter === "other") { if (v.special !== "other") return false; }
     else if (state.filter !== "all" && v.type !== state.filter) return false;
-    if (q && !v.id.toLowerCase().includes(q)) return false;
-    return true;
+    if (!q) return true;
+    return matchStrict(v) || matchLoose(v);
   });
+  // 严格命中存在时丢弃宽松命中：保证精确 ID / 短语搜索的查准率
+  // （如搜 "1.16_combat-1" 只返回该版本，不会因分词把 1.16_combat-* 全带出来）
+  if (q) {
+    const strictHits = state.filtered.filter(matchStrict);
+    if (strictHits.length) state.filtered = strictHits;
+  }
   if (!state.sortDesc) state.filtered = state.filtered.slice().reverse();
   state.rendered = 0;
   $("#versionList").innerHTML = "";
@@ -1099,6 +1138,7 @@ function buildRow(v) {
     `<span class="vid" title="${esc(v.id)}">${esc(v.id)}</span>` +
     `<span class="badge ${v.type}">${TYPE_LABEL[v.type] || v.type}</span>` +
     newest.join("") +
+    (v.alias ? `<span class="valias" title="${esc(v.alias)}">${esc(v.alias)}</span>` : "") +
     `<span class="vdate">${fmtDate(v.releaseTime)}</span>`;
   row.appendChild(main);
 
@@ -1164,6 +1204,7 @@ async function loadDetail(container, v) {
       <h4>版本信息</h4>
       <table class="meta-table">
         <tr><td class="k">版本 ID</td><td class="v">${esc(v.id)}</td></tr>
+        ${v.alias ? `<tr><td class="k">通称</td><td class="v">${esc(v.alias)}${v.aliasZh && v.aliasZh !== v.alias ? `（${esc(v.aliasZh)}）` : ""}${v.wiki ? ` · <a href="${esc(v.wiki)}" target="_blank" rel="noopener" style="color:var(--blue)">Minecraft Wiki ↗</a>` : ""}</td></tr>` : ""}
         <tr><td class="k">类型</td><td class="v">${TYPE_LABEL[v.type] || v.type}（${esc(v.type)}）</td></tr>
         <tr><td class="k">发布时间</td><td class="v">${esc(v.releaseTime || "-")}</td></tr>
         ${client ? `<tr><td class="k">客户端</td><td class="v">${fmtSize(client.size)} · SHA1 ${esc(client.sha1 || "-")}</td></tr>` : ""}

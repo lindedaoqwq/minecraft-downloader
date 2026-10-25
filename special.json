@@ -110,7 +110,10 @@
    "special": "unreleased",
    "clientSize": 17523426,
    "clientSha1": "177472ace3ff5d98fbd63b4bcd5bbef5b035a018",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 8c",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_8c",
+   "aliasZh": "战斗测试 8c"
   },
   {
    "id": "1.16_combat-5",
@@ -121,7 +124,10 @@
    "special": "unreleased",
    "clientSize": 17522699,
    "clientSha1": "123cf1bd6736a3c1a47e8c1727a3db18e3c9cace",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 8b",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_8b",
+   "aliasZh": "战斗测试 8b"
   },
   {
    "id": "1.16_combat-4",
@@ -132,7 +138,10 @@
    "special": "unreleased",
    "clientSize": 17522984,
    "clientSha1": "0d4f92e7cc264f251f65677b1b078c8bc3f0959c",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 8",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_8",
+   "aliasZh": "战斗测试 8"
   },
   {
    "id": "1.16_combat-3",
@@ -143,7 +152,10 @@
    "special": "unreleased",
    "clientSize": 17521480,
    "clientSha1": "14991d31f1002e5cbd97e62310cba614666f876b",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 7c",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_7c",
+   "aliasZh": "战斗测试 7c"
   },
   {
    "id": "1.16_combat-2",
@@ -154,7 +166,10 @@
    "special": "unreleased",
    "clientSize": 17521423,
    "clientSha1": "0fbf7624030e67904cc0fbe3df2dbf34369a690d",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 7b",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_7b",
+   "aliasZh": "战斗测试 7b"
   },
   {
    "id": "1.16_combat-1",
@@ -165,7 +180,10 @@
    "special": "unreleased",
    "clientSize": 17521275,
    "clientSha1": "3ad450f458149702ec3dd7655af44ab422a83e72",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 7",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_7",
+   "aliasZh": "战斗测试 7"
   },
   {
    "id": "1.16_combat-0",
@@ -176,7 +194,10 @@
    "special": "unreleased",
    "clientSize": 17512562,
    "clientSha1": "4f08b4667575cbfc35e44c9556a0667bd3d0f5cc",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 6",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_6",
+   "aliasZh": "战斗测试 6"
   },
   {
    "id": "1.15_combat-6",
@@ -187,7 +208,10 @@
    "special": "unreleased",
    "clientSize": 15543966,
    "clientSha1": "0ad80b317873e1f64a9a79af09a02ddef62ce67c",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 5",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_5",
+   "aliasZh": "战斗测试 5"
   },
   {
    "id": "1.15_combat-1",
@@ -198,7 +222,10 @@
    "special": "unreleased",
    "clientSize": 15524962,
    "clientSha1": "af7b75f44fdcf814727c45c2eb6e4acc01000465",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 4",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_4",
+   "aliasZh": "战斗测试 4"
   },
   {
    "id": "1.14_combat-3",
@@ -209,7 +236,10 @@
    "special": "unreleased",
    "clientSize": 25204328,
    "clientSha1": "fd8f2712d8d5089f4f0ee817a6f6fbe7f9d4c6f1",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 3",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_3",
+   "aliasZh": "战斗测试 3"
   },
   {
    "id": "1.14_combat-0",
@@ -220,7 +250,10 @@
    "special": "unreleased",
    "clientSize": 25194539,
    "clientSha1": "307045ecb6de9a9436d333d32440f5dbfc367c20",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 2",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_Combat_Test_2",
+   "aliasZh": "战斗测试 2"
   },
   {
    "id": "1.14_combat-212796",
@@ -231,7 +264,10 @@
    "special": "unreleased",
    "clientSize": 18816194,
    "clientSha1": "98cb56935c762c412b64ddda8e3851544243fb2d",
-   "hasServer": true
+   "hasServer": true,
+   "alias": "Combat Test 1",
+   "wiki": "https://minecraft.wiki/w/Java_Edition_1.14.3_-_Combat_Test",
+   "aliasZh": "战斗测试 1"
   },
   {
    "id": "2.0_blue",
@@ -2158,7 +2194,8 @@
    "clientSha1": "55a8b15c11846eb11dfe5b2e9c776998d539b3f0",
    "hasServer": true,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "2.0 预览版"
   },
   {
    "id": "1.0.0-tominecon",
@@ -2171,7 +2208,8 @@
    "clientSha1": "9ae183bbdf659ac7186fcb25510e1eb9be70e8d8",
    "hasServer": true,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "MINECON 2011 展示版"
   },
   {
    "id": "b1.2_02-20110517",
@@ -2184,7 +2222,8 @@
    "clientSha1": "a9b9522e7b4c1738209694e0546cb9f980401804",
    "hasServer": false,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "Beta 1.2_02 开发者版"
   },
   {
    "id": "b1.3-pcgamer",
@@ -2197,7 +2236,8 @@
    "clientSha1": "4e3f157b48102b099581c726a00ca00d0cb64301",
    "hasServer": false,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "PC Gamer 演示版"
   },
   {
    "id": "4k-2",
@@ -2210,7 +2250,8 @@
    "clientSha1": "b07d18456c38683d98d3027392852b8237e1dd14",
    "hasServer": false,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "Minecraft 4K 更新版"
   },
   {
    "id": "4k-1",
@@ -2223,7 +2264,8 @@
    "clientSha1": "641242f2b11f2e8e8049e2e3d41e84dd66498aeb",
    "hasServer": false,
    "jsonSource": "community",
-   "jarHost": "omniarchive"
+   "jarHost": "omniarchive",
+   "alias": "Minecraft 4K 初版"
   }
  ]
 }
