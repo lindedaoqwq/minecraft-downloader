@@ -7,8 +7,9 @@
 <link rel="icon" type="image/png" href="textures/grass_block_top.png">
 <style>
 @font-face{
-  font-family:"Zpix";
-  src:url("fonts/zpix.ttf") format("truetype");
+  font-family:"GNU Unifont";
+  src:url("fonts/unifont.woff2") format("woff2"),
+      url("fonts/unifont.otf") format("opentype");
   font-display:swap;
 }
 :root{
@@ -25,7 +26,7 @@
   --green-deep:#4a9131;
   --red:#e05c5c;
   --amber:#e8a33d;
-  --pixel:"Zpix",ui-monospace,monospace;
+  --pixel:"GNU Unifont",ui-monospace,monospace;
   --mono:ui-monospace,"Cascadia Mono",Consolas,"Courier New",monospace;
   --r:8px;
 }
@@ -473,7 +474,7 @@ footer .flinks a{color:var(--blue)}
 
   <footer>
     <p>版本数据来自 Mojang 官方版本清单 <code>launchermeta.mojang.com</code>（自动检测）+ 社区整理的未列出版本清单（<code>zkitefly/unlisted-versions-of-minecraft</code>，源自 PrismLauncher/meta 与 Minecraft Wiki）。ZIP 内的 JSON 均为<b>官方版本元数据原文</b>（字节未做任何改动，与官方启动器下载的文件一致）；JAR 与官方文件 SHA1 相同。</p>
-    <p><b>愚人节版本</b>（2.0 / 3D Shareware / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine 等）与<b>未发布版本</b>（Combat Test 1–6、1.18 / 1.19 实验快照等）不在官方启动器列表内，此处一并提供下载。</p>
+    <p><b>愚人节版本</b>（2.0 / 15w14a / 1.RV-Pre1 / 3D Shareware v1.34 / 20w14∞ / 22w13oneBlockAtATime / 23w13a_or_b / 24w14potato / 25w14craftmine / 26w14a）与<b>未发布版本</b>（Combat Test 1–6、1.18 / 1.19 实验快照等）不在官方启动器列表内，此处一并提供下载。愚人节版本分类依据 Minecraft Wiki。</p>
     <p>BMCLAPI 镜像由 bangbang93 提供：<code>bmclapi2.bangbang93.com</code> · 本页面为第三方工具，与 Mojang / Microsoft 无关联。</p>
     <p class="flinks"><a href="https://github.com/lindedaoqwq/minecraft-downloader" target="_blank" rel="noopener">GitHub 仓库</a></p>
   </footer>
@@ -1206,7 +1207,7 @@ function renderStats() {
   $("#stTotal").textContent = counts.all;
   $("#stRelease").textContent = m.latest.release;
   $("#stSnapshot").textContent = m.latest.snapshot;
-  $("#stSpecial").textContent = `${counts.april_fools + counts.unreleased} 个`;
+  $("#stSpecial").textContent = `${counts.april_fools + counts.unreleased}`;
   $("#heroCount").textContent = counts.all;
   $("#stats").hidden = false;
   $("#toolbar").hidden = false;

@@ -24,9 +24,11 @@
 
 | 分类 | 收录内容 |
 |---|---|
-| 🎭 愚人节（14 个） | 2.0（蓝/红/紫）、3D Shareware v1.34、1.RV-Pre1、20w14∞、22w13oneBlockAtATime、23w13a_or_b、24w14potato、25w14craftmine 等 |
+| 🎭 愚人节（12 个） | 2.0（蓝/红/紫）、15w14a、1.RV-Pre1、3D Shareware v1.34、20w14∞、22w13oneBlockAtATime、23w13a_or_b、24w14potato、25w14craftmine、26w14a |
 | 🔒 未发布（20 个） | Combat Test 1–6（1.14 / 1.15 / 1.16 三代）、1.18 / 1.19 实验快照等 |
 | 📜 远古未列出（171 个） | 官方清单之外的 11w–13w 快照、Alpha / Beta 零散版本 |
+
+> 愚人节版本分类依据 [Minecraft Wiki](https://minecraft.wiki/w/Java_Edition_versions#April_Fools'_versions)。注意 20w14a / 22w13a / 23w13a / 24w14a 是愚人节当周发布的**常规快照**（Wiki 有消歧义说明），不属于愚人节版本；15w14a 与 26w14a 为真正的愚人节版本。
 
 ## ZIP 里有什么
 
