@@ -119,6 +119,19 @@ a{color:var(--blue);text-decoration:none}
 .chip .n{font-size:11px;color:var(--faint)}
 .chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .chip.active .n{color:rgba(255,255,255,.75)}
+.toolbar-top{display:block}
+.sub-chips{display:none;flex-wrap:wrap;gap:7px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft)}
+.sub-chips:not([hidden]){display:flex}
+.sub-chips::before{content:"未发布分类";font-size:11px;color:var(--faint);font-family:var(--pixel);flex:none;margin-right:2px}
+.subchip{
+  flex:none;font-size:12px;font-family:var(--pixel);
+  border:1.5px solid var(--line);background:#fff;color:var(--muted);
+  border-radius:999px;padding:4px 11px;min-height:30px;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.subchip .n{font-size:10px;color:var(--faint)}
+.subchip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.subchip.active .n{color:rgba(255,255,255,.75)}
 .toolbar-row2{display:flex;gap:8px;margin-top:10px}
 .search-box{
   flex:1;display:flex;align-items:center;gap:8px;
@@ -139,7 +152,7 @@ a{color:var(--blue);text-decoration:none}
 }
 .sort-btn:hover{border-color:var(--blue);color:var(--blue)}
 @media (min-width:768px){
-  .toolbar{display:flex;align-items:center;gap:12px}
+  .toolbar-top{display:flex;align-items:center;gap:12px}
   .chips{overflow:visible;flex:none}
   .toolbar-row2{margin-top:0;flex:1;justify-content:flex-end}
   .search-box{max-width:300px}
@@ -460,23 +473,26 @@ footer .flinks a{color:var(--blue)}
   </section>
 
   <section class="toolbar" id="toolbar" hidden>
-    <div class="chips" id="chips">
-      <button class="chip active" data-filter="all">全部<span class="n" id="cAll"></span></button>
-      <button class="chip" data-filter="release">正式版<span class="n" id="cRelease"></span></button>
-      <button class="chip" data-filter="snapshot">快照<span class="n" id="cSnapshot"></span></button>
-      <button class="chip" data-filter="old_beta">Beta<span class="n" id="cBeta"></span></button>
-      <button class="chip" data-filter="old_alpha">远古版<span class="n" id="cAlpha"></span></button>
-      <button class="chip" data-filter="april_fools">愚人节<span class="n" id="cAF"></span></button>
-      <button class="chip" data-filter="unreleased">未发布<span class="n" id="cUnreleased"></span></button>
-      <button class="chip" data-filter="other">其他特别版<span class="n" id="cOther"></span></button>
-    </div>
-    <div class="toolbar-row2">
-      <div class="search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="search" type="search" placeholder="搜索版本号，如 1.7.10" autocomplete="off">
+    <div class="toolbar-top">
+      <div class="chips" id="chips">
+        <button class="chip active" data-filter="all">全部<span class="n" id="cAll"></span></button>
+        <button class="chip" data-filter="release">正式版<span class="n" id="cRelease"></span></button>
+        <button class="chip" data-filter="snapshot">快照<span class="n" id="cSnapshot"></span></button>
+        <button class="chip" data-filter="old_beta">Beta<span class="n" id="cBeta"></span></button>
+        <button class="chip" data-filter="old_alpha">远古版<span class="n" id="cAlpha"></span></button>
+        <button class="chip" data-filter="april_fools">愚人节<span class="n" id="cAF"></span></button>
+        <button class="chip" data-filter="unreleased">未发布<span class="n" id="cUnreleased"></span></button>
+        <button class="chip" data-filter="other">其他特别版<span class="n" id="cOther"></span></button>
       </div>
-      <button class="sort-btn" id="sortBtn">↓ 最新在前</button>
+      <div class="toolbar-row2">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="search" type="search" placeholder="搜索版本号，如 1.7.10" autocomplete="off">
+        </div>
+        <button class="sort-btn" id="sortBtn">↓ 最新在前</button>
+      </div>
     </div>
+    <div class="sub-chips" id="subChips" hidden></div>
   </section>
 
   <main id="versionList"></main>
@@ -557,6 +573,9 @@ const state = {
   metaCache: new Map(),
   busy: new Set(),
   groupCounts: null,
+  subGroup: "all",   // 「未发布」栏目内的二级分类筛选（all / release / snapshot / pending / old_beta / old_alpha / standalone）
+  catCounts: null,   // 未发布各底层类型的数量（用于二级分类 chips 与板块标题）
+  catTotal: 0,       // 未发布筛选后的总数（搜索后），供「全部」chip 计数
 };
 
 const $ = (s) => document.querySelector(s);
@@ -1106,17 +1125,30 @@ function applyFilter() {
   if (state.filter === "unreleased") {
     // 「未发布」栏目内按底层类型分板块（正式版 / 快照 / 实验版 / Beta / 远古版），板块内按时间排序
     const dir = state.sortDesc ? 1 : -1;
+    // 先统计每个底层类型的数量（用于二级分类筛选 chips 与板块标题），再按板块顺序 + 时间排序
+    const catCounts = {};
+    state.filtered.forEach((v) => { catCounts[v.type] = (catCounts[v.type] || 0) + 1; });
+    state.catCounts = catCounts;
+    state.catTotal = state.filtered.length;
     state.filtered.sort((a, b) => {
       const ta = TYPE_ORDER[a.type] ?? 99, tb = TYPE_ORDER[b.type] ?? 99;
       if (ta !== tb) return ta - tb;
       return dir * (isoMs(b.releaseTime) - isoMs(a.releaseTime));
     });
-    state.groupCounts = {};
-    state.filtered.forEach((v) => { state.groupCounts[v.type] = (state.groupCounts[v.type] || 0) + 1; });
+    if (state.subGroup && state.subGroup !== "all") {
+      // 在「未发布」栏目内进一步按二级分类筛选：只展示选中类型，不再插板块标题
+      state.filtered = state.filtered.filter((v) => v.type === state.subGroup);
+      state.groupCounts = null;
+    } else {
+      state.groupCounts = catCounts;
+    }
   } else {
+    state.catCounts = null;
+    state.catTotal = 0;
     state.groupCounts = null;
     if (!state.sortDesc) state.filtered = state.filtered.slice().reverse();
   }
+  renderSubChips();
   state.rendered = 0;
   $("#versionList").innerHTML = "";
   renderBatch();
@@ -1161,6 +1193,20 @@ function buildGroupHeader(type, count) {
   el.dataset.group = type;
   el.innerHTML = `<span class="vs-name">${TYPE_LABEL[type] || type}</span><span class="vs-count">${count} 个</span>`;
   return el;
+}
+
+// 「未发布」栏目内的二级分类筛选条：全部 + 各存在的底层类型（含数量）
+function renderSubChips() {
+  const box = $("#subChips");
+  if (state.filter !== "unreleased" || !state.catCounts) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  // 二级分类展示顺序：正式版 / 快照 / 实验版 / Beta / 远古版 / 独立版
+  const order = ["release", "snapshot", "pending", "old_beta", "old_alpha", "standalone"];
+  const items = [["all", "全部", state.catTotal]];
+  order.forEach((t) => { if (state.catCounts[t]) items.push([t, TYPE_LABEL[t] || t, state.catCounts[t]]); });
+  box.innerHTML = items.map(([k, label, n]) =>
+    `<button class="subchip${state.subGroup === k ? " active" : ""}" data-sub="${k}">${label}<span class="n">${n}</span></button>`
+  ).join("");
 }
 
 function buildRow(v) {
@@ -1353,6 +1399,15 @@ $("#chips").addEventListener("click", (e) => {
   $$("#chips .chip").forEach((c) => c.classList.remove("active"));
   chip.classList.add("active");
   state.filter = chip.dataset.filter;
+  state.subGroup = "all";   // 切换一级栏目时重置二级分类筛选
+  applyFilter();
+});
+
+// 「未发布」栏目内的二级分类筛选
+$("#subChips").addEventListener("click", (e) => {
+  const b = e.target.closest(".subchip");
+  if (!b) return;
+  state.subGroup = b.dataset.sub;
   applyFilter();
 });
 
