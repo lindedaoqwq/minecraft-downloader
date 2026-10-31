@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Minecraft 全版本下载器</title>
-<link rel="icon" type="image/png" href="textures/grass_block_top.png">
+<link rel="icon" type="image/png" sizes="32x32" href="textures/grass_block_iso-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="textures/grass_block_iso-48.png">
+<link rel="apple-touch-icon" href="textures/apple-touch-icon.png">
+<meta name="theme-color" content="#5392ef">
 <style>
 @font-face{
   font-family:"GNU Unifont";
@@ -150,6 +153,12 @@ a{color:var(--blue);text-decoration:none}
 }
 .vrow:hover{border-color:#c4d4ef}
 .vrow.open{border-color:var(--blue)}
+/* 「未发布」栏目内的类型板块标题 */
+.vsection{display:flex;align-items:center;gap:10px;margin:22px 0 8px;padding:0 2px}
+.vsection:first-child{margin-top:2px}
+.vs-name{font-size:14px;font-weight:700;color:var(--text);flex:none}
+.vs-count{font-size:11px;color:var(--muted);background:#e8eefb;border:1.5px solid #d7e2f6;border-radius:99px;padding:1px 8px;flex:none}
+.vsection::after{content:"";flex:1;height:2px;background:var(--line-soft)}
 .vrow-main{
   width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
   background:none;border:none;text-align:left;
@@ -534,6 +543,8 @@ const SRC_LABEL = { official: "官方源", bmclapi: "BMCLAPI 镜像" };
 const SPECIAL_LABEL = { april_fools: "愚人节", unreleased: "未发布", other: "其他特别版" };
 
 const TYPE_LABEL = { release: "正式版", snapshot: "快照", old_beta: "Beta", old_alpha: "远古版", pending: "实验版", standalone: "独立版" };
+// 「未发布」栏目内按底层类型分板块时的展示顺序（正式版 → 快照 → 实验版 → Beta → 远古版）
+const TYPE_ORDER = { release: 0, snapshot: 1, pending: 2, old_beta: 3, old_alpha: 4, standalone: 5 };
 
 const state = {
   manifest: null,
@@ -545,6 +556,7 @@ const state = {
   batch: 60,
   metaCache: new Map(),
   busy: new Set(),
+  groupCounts: null,
 };
 
 const $ = (s) => document.querySelector(s);
@@ -1091,7 +1103,20 @@ function applyFilter() {
     const strictHits = state.filtered.filter(matchStrict);
     if (strictHits.length) state.filtered = strictHits;
   }
-  if (!state.sortDesc) state.filtered = state.filtered.slice().reverse();
+  if (state.filter === "unreleased") {
+    // 「未发布」栏目内按底层类型分板块（正式版 / 快照 / 实验版 / Beta / 远古版），板块内按时间排序
+    const dir = state.sortDesc ? 1 : -1;
+    state.filtered.sort((a, b) => {
+      const ta = TYPE_ORDER[a.type] ?? 99, tb = TYPE_ORDER[b.type] ?? 99;
+      if (ta !== tb) return ta - tb;
+      return dir * (isoMs(b.releaseTime) - isoMs(a.releaseTime));
+    });
+    state.groupCounts = {};
+    state.filtered.forEach((v) => { state.groupCounts[v.type] = (state.groupCounts[v.type] || 0) + 1; });
+  } else {
+    state.groupCounts = null;
+    if (!state.sortDesc) state.filtered = state.filtered.slice().reverse();
+  }
   state.rendered = 0;
   $("#versionList").innerHTML = "";
   renderBatch();
@@ -1101,7 +1126,15 @@ function renderBatch() {
   const list = $("#versionList");
   const end = Math.min(state.rendered + state.batch, state.filtered.length);
   const frag = document.createDocumentFragment();
-  for (let i = state.rendered; i < end; i++) frag.appendChild(buildRow(state.filtered[i]));
+  for (let i = state.rendered; i < end; i++) {
+    const v = state.filtered[i];
+    if (state.groupCounts) {
+      // 分板块模式：每个类型的第一条前插入板块标题（跨批次也能正确判断边界）
+      const prevType = i > 0 ? state.filtered[i - 1].type : null;
+      if (v.type !== prevType) frag.appendChild(buildGroupHeader(v.type, state.groupCounts[v.type]));
+    }
+    frag.appendChild(buildRow(v));
+  }
   list.appendChild(frag);
   state.rendered = end;
 
@@ -1120,6 +1153,14 @@ function renderBatch() {
     $("#loadMore").textContent = "已加载全部";
   }
   $("#listCount").textContent = `显示 ${state.rendered} / ${state.filtered.length} 个版本`;
+}
+
+function buildGroupHeader(type, count) {
+  const el = document.createElement("div");
+  el.className = "vsection";
+  el.dataset.group = type;
+  el.innerHTML = `<span class="vs-name">${TYPE_LABEL[type] || type}</span><span class="vs-count">${count} 个</span>`;
+  return el;
 }
 
 function buildRow(v) {
