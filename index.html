@@ -1077,7 +1077,11 @@ function applyFilter() {
     if (state.filter === "april_fools") { if (v.special !== "april_fools") return false; }
     else if (state.filter === "unreleased") { if (v.special !== "unreleased") return false; }
     else if (state.filter === "other") { if (v.special !== "other") return false; }
-    else if (state.filter !== "all" && v.type !== state.filter) return false;
+    else if (state.filter !== "all") {
+      // 未发布 / 其他特别版只归到各自专题栏目，不混入按官方类型划分的栏目（如 Beta / 远古版）
+      if (v.special === "unreleased" || v.special === "other") return false;
+      if (v.type !== state.filter) return false;
+    }
     if (!q) return true;
     return matchStrict(v) || matchLoose(v);
   });
@@ -1248,7 +1252,8 @@ function renderStats() {
   const m = state.manifest;
   const counts = { all: m.versions.length, release: 0, snapshot: 0, old_beta: 0, old_alpha: 0, april_fools: 0, unreleased: 0, other: 0 };
   m.versions.forEach((v) => {
-    if (counts[v.type] !== undefined) counts[v.type]++;
+    // 类型栏目计数只统计该类型下的正式版本，未发布 / 其他特别版已归到各自专题栏目
+    if (counts[v.type] !== undefined && v.special !== "unreleased" && v.special !== "other") counts[v.type]++;
     if (v.special === "april_fools") counts.april_fools++;
     if (v.special === "unreleased") counts.unreleased++;
     if (v.special === "other") counts.other++;
