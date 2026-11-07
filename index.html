@@ -8,113 +8,117 @@
 <link rel="icon" type="image/png" sizes="48x48" href="textures/grass_block_iso-48.png">
 <link rel="apple-touch-icon" href="textures/apple-touch-icon.png">
 <meta name="theme-color" content="#2E7D32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
- * Material Design 3 (light theme) 视觉翻新
+ * Material Design (参考 google/material-design-lite) 视觉翻新
  * 仅替换样式，结构与 JS 逻辑保持不变。
+ *
+ * 设计要点（对照 MDL 源码）：
+ *  - Roboto 字体 + 经典 Material 文字色 rgba(0,0,0,.87/.54/.26)
+ *  - 纯白 surface 置于 #fafafa 背景；凸起元素用 MDL 标志性三层阴影
+ *    (shadow-2dp / 4dp / 6dp)
+ *  - 卡片近乎方角 (border-radius:2px)，而非 MD3 的大圆角药丸
+ *  - 凸起彩色按钮带按压抬升 + 涟漪(ripple) 交互
+ *  - 筛选条做成 MDL 按钮组：选中=凸起主色，未选=平面文字按钮
+ *  - 搜索框为 MDL 下划线文本框
+ *  - 顶部应用栏采用 MDL 标志性彩色(header)风格，草方块绿主色
  * ===================================================================== */
 :root{
-  /* ---- MD3 色彩系统（绿色种子，呼应草方块）---- */
-  --md-primary:#2E7D32;
-  --md-on-primary:#FFFFFF;
-  --md-primary-container:#B4E2A4;
-  --md-on-primary-container:#08230B;
-  --md-secondary:#55624A;
-  --md-on-secondary:#FFFFFF;
-  --md-secondary-container:#D9E8CB;
-  --md-on-secondary-container:#131F0D;
-  --md-tertiary:#386A66;
-  --md-on-tertiary:#FFFFFF;
-  --md-tertiary-container:#BCEBDF;
-  --md-bg:#EDF1E4;
-  --md-surface:#FBFEF6;
-  --md-surface-variant:#DEE5D4;
-  --md-on-surface:#1A1D16;
-  --md-on-surface-variant:#42483B;
-  --md-surface-container:#F1F4EA;
-  --md-surface-container-high:#E9EFDD;
-  --md-outline:#C2C9B6;
-  --md-outline-variant:#C9D0BC;
-  --md-inverse-surface:#2D3225;
-  --md-inverse-on-surface:#EFF1E7;
-  --md-error:#B3261E;
-  --md-warning:#7D5A00;
+  /* 主色（草方块绿，取自 Material green 600/800）+ 强调色（深橙，点缀用） */
+  --md-primary:#43a047;
+  --md-primary-dark:#2e7d32;
+  --md-accent:#f4511e;
 
-  /* 类型色（MD3 tonal chips） */
-  --c-release-bg:#C8E6C9;  --c-release-fg:#0F3D12;
-  --c-snapshot-bg:#D0E4FF; --c-snapshot-fg:#0B3A73;
-  --c-beta-bg:#FFE0B2;     --c-beta-fg:#6B3E00;
-  --c-alpha-bg:#E1BEE7;    --c-alpha-fg:#4A1E5C;
-  --c-pending-bg:#D9E2F3;  --c-pending-fg:#28385C;
-  --c-standalone-bg:#F0E0C2; --c-standalone-fg:#5A3E12;
-  --c-af-bg:#F8BBD0;      --c-af-fg:#6A1035;
-  --c-unrel-bg:#C5E1F5;    --c-unrel-fg:#0D3A63;
-  --c-other-bg:#B9E5D6;    --c-other-fg:#0C3D2E;
+  /* 表面与背景（MDL grey-50 + 纯白卡片） */
+  --md-bg:#fafafa;
+  --md-surface:#ffffff;
 
-  /* 旧变量名兼容（inline 样式仍可能引用） */
+  /* 经典 Material 文字层级 */
+  --md-text:rgba(0,0,0,.87);
+  --md-text-2:rgba(0,0,0,.54);
+  --md-text-3:rgba(0,0,0,.38);
+  --md-text-disabled:rgba(0,0,0,.26);
+  --md-divider:rgba(0,0,0,.12);
+  --md-divider-soft:rgba(0,0,0,.08);
+
+  /* 字体：Roboto 优先，中文回退系统无衬线 */
+  --font:'Roboto','Helvetica Neue','Noto Sans SC','PingFang SC','Microsoft YaHei',Arial,sans-serif;
+  --mono:'Roboto Mono',ui-monospace,Consolas,'Courier New',monospace;
+
+  /* 形状：Material 卡片近乎方角 */
+  --radius:2px;
+
+  /* MDL 三层阴影（shadow-2dp / 4dp / 6dp，与 mdl _mixins 一致） */
+  --elev-2dp:0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.20), 0 1px 5px 0 rgba(0,0,0,.12);
+  --elev-4dp:0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.20);
+  --elev-6dp:0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12), 0 3px 5px -1px rgba(0,0,0,.20);
+  --elev-focus:0 0 8px rgba(0,0,0,.18), 0 8px 16px rgba(0,0,0,.36);
+
+  /* 旧变量名兼容（内联/JS 仍可能引用） */
   --blue:var(--md-primary);
-  --green:#2E7D32; --green-deep:#246327;
-  --red:var(--md-error); --amber:var(--md-warning);
-  --text:var(--md-on-surface);
-  --muted:var(--md-on-surface-variant);
-  --faint:#8A9080;
-  --line:var(--md-outline);
-  --line-soft:var(--md-outline-variant);
-  --bg:var(--md-bg);
-  --card:var(--md-surface);
+  --green:#43a047; --green-deep:#2e7d32;
+  --red:#d32f2f; --amber:#f57f17;
+  --text:var(--md-text); --muted:var(--md-text-2);
+  --faint:rgba(0,0,0,.38);
+  --line:var(--md-divider); --line-soft:var(--md-divider-soft);
+  --bg:var(--md-bg); --card:var(--md-surface);
+  --pixel:var(--font);
 
-  /* 字体：Material 偏好 Roboto / 系统中文字体，去掉像素字体 */
-  --pixel:"Roboto","Noto Sans SC","PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
-  --mono:ui-monospace,"Roboto Mono","Cascadia Mono",Consolas,"Courier New",monospace;
-
-  /* 形状 */
-  --r:16px; --r-sm:12px; --r-pill:999px;
-
-  /* MD3 层级阴影（柔和、多层） */
-  --elev-1:0 1px 2px 0 rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
-  --elev-2:0 1px 2px 0 rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
-  --elev-3:0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px 0 rgba(0,0,0,.30);
-  --elev-4:0 6px 10px 4px rgba(0,0,0,.15), 0 2px 3px 0 rgba(0,0,0,.30);
+  /* 类型色（Material 调色板：深 foreground + 浅 background） */
+  --c-release:#2e7d32;  --c-release-bg:#c8e6c9;
+  --c-snapshot:#1565c0; --c-snapshot-bg:#e3f2fd;
+  --c-beta:#e65100;     --c-beta-bg:#ffe0b2;
+  --c-alpha:#6a1b9a;    --c-alpha-bg:#e1bee7;
+  --c-pending:#283593;  --c-pending-bg:#dde3f3;
+  --c-standalone:#5d4037; --c-standalone-bg:#efe0d0;
+  --c-af:#ad1457;      --c-af-bg:#f8bbd0;
+  --c-unrel:#006064;    --c-unrel-bg:#c5eef2;
+  --c-other:#004d40;    --c-other-bg:#b9e5d6;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:var(--pixel);
+  font-family:var(--font);
   background:var(--md-bg);
-  color:var(--md-on-surface);
+  color:var(--md-text);
   font-size:14px;
-  line-height:1.6;
+  line-height:1.5;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
 img{-webkit-user-drag:none;user-select:none}
-button{font-family:var(--pixel);cursor:pointer;border:none;background:none}
+button{font-family:var(--font);cursor:pointer;border:none;background:none}
 a{color:var(--md-primary);text-decoration:none}
 
-/* ============ 顶部应用栏（MD3 App Bar） ============ */
+/* ============ 顶部应用栏（MDL 彩色 header 风格） ============ */
 .topbar{
   position:sticky;top:0;z-index:100;
-  background:var(--md-surface);
-  box-shadow:var(--elev-2);
+  background:var(--md-primary);
+  color:#fff;
+  box-shadow:var(--elev-4dp);
   padding:0 16px;height:64px;
   display:flex;align-items:center;gap:12px;
 }
 .topbar .logo{
-  width:40px;height:40px;flex:none;border-radius:10px;
-  image-rendering:pixelated;background:var(--md-surface-container);
+  width:40px;height:40px;flex:none;border-radius:var(--radius);
+  image-rendering:pixelated;background:rgba(255,255,255,.16);padding:3px;
 }
-.topbar .brand{font-size:20px;font-weight:500;letter-spacing:.3px}
-.topbar .brand em{font-style:normal;color:var(--md-primary)}
+.topbar .brand{font-size:20px;font-weight:500;letter-spacing:.2px;color:rgba(255,255,255,.92)}
+.topbar .brand em{font-style:normal;color:#fff;font-weight:700}
 .topbar .sp{flex:1}
 .topbar .gh{
   display:inline-flex;align-items:center;gap:7px;
-  font-size:13px;font-weight:500;color:var(--md-on-surface-variant);
-  background:var(--md-secondary-container);color:var(--md-on-secondary-container);
-  border-radius:var(--r-pill);
-  padding:9px 16px;transition:box-shadow .15s,transform .1s;
+  font-size:13px;font-weight:500;letter-spacing:.02em;
+  background:#fff;color:var(--md-primary-dark);
+  border-radius:var(--radius);
+  padding:9px 16px;box-shadow:var(--elev-2dp);
+  transition:box-shadow .2s,transform .1s;
 }
-.topbar .gh:hover{box-shadow:var(--elev-1)}
+.topbar .gh:hover{box-shadow:var(--elev-4dp)}
 .topbar .gh:active{transform:scale(.97)}
 @media (max-width:520px){.topbar .gh .gt{display:none}.topbar .gh{padding:9px}}
 
@@ -124,154 +128,157 @@ a{color:var(--md-primary);text-decoration:none}
 .hero .cube{
   width:96px;height:96px;margin:0 auto 16px;
   image-rendering:pixelated;
-  filter:drop-shadow(0 6px 10px rgba(26,29,22,.18));
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));
   animation:bob 2.6s ease-in-out infinite;
 }
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.hero h1{font-size:clamp(24px,5.6vw,34px);font-weight:500;letter-spacing:.2px;line-height:1.35}
-.hero h1 .hl{color:var(--md-primary)}
-.hero .sub{margin:14px auto 0;color:var(--md-on-surface-variant);font-size:clamp(13px,3vw,15px);max-width:760px;padding:0 8px;line-height:1.7}
-.hero .sub b{color:var(--md-on-surface);font-weight:600}
+.hero h1{font-size:clamp(24px,5.6vw,34px);font-weight:400;letter-spacing:.2px;line-height:1.3}
+.hero h1 .hl{color:var(--md-primary);font-weight:500}
+.hero .sub{margin:14px auto 0;color:var(--md-text-2);font-size:clamp(13px,3vw,15px);max-width:760px;padding:0 8px;line-height:1.7}
+.hero .sub b{color:var(--md-text);font-weight:500}
 
-/* ============ 统计卡片（MD3 Card） ============ */
+/* ============ 统计卡片（MDL Card） ============ */
 .stats{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:16px;
   margin:28px 0 20px;
 }
 .stats[hidden]{display:none}
 .stat{
-  background:var(--md-surface);border-radius:var(--r);box-shadow:var(--elev-1);
-  padding:18px 14px;text-align:center;
-  transition:box-shadow .15s,transform .12s;
+  background:var(--md-surface);border-radius:var(--radius);box-shadow:var(--elev-2dp);
+  padding:20px 14px;text-align:center;
+  transition:box-shadow .2s;
 }
-.stat:hover{box-shadow:var(--elev-2)}
-.stat .k{font-size:12px;font-weight:500;letter-spacing:.4px;color:var(--md-on-surface-variant);text-transform:uppercase}
-.stat .v{font-size:clamp(18px,4.6vw,24px);font-weight:500;margin-top:6px;color:var(--md-on-surface);word-break:break-all}
+.stat:hover{box-shadow:var(--elev-4dp)}
+.stat .k{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--md-text-2)}
+.stat .v{font-size:clamp(18px,4.6vw,24px);font-weight:500;margin-top:8px;color:var(--md-text);word-break:break-all}
 .stat .v.blue{color:var(--md-primary)}
 .stat .v.small{font-size:clamp(13px,3.4vw,15px)}
 @media (min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}}
-@media (min-width:768px){.stat{padding:22px 16px}}
+@media (min-width:768px){.stat{padding:24px 16px}}
 
-/* ============ 工具栏（MD3 Surface 卡片 + 内部控件） ============ */
+/* ============ 工具栏（MDL 卡片 + 按钮组 / 下划线文本框） ============ */
 .toolbar{
-  background:var(--md-surface);border-radius:var(--r);
-  box-shadow:var(--elev-1);padding:16px;margin-bottom:18px;
+  background:var(--md-surface);border-radius:var(--radius);
+  box-shadow:var(--elev-2dp);padding:16px;margin-bottom:20px;
 }
-.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-/* MD3 筛选 chip（药丸形，选中=primary-container） */
-.chip{
-  flex:none;font-size:14px;font-weight:500;line-height:20px;
-  background:var(--md-surface);color:var(--md-on-surface-variant);
-  border:1px solid var(--md-outline);border-radius:var(--r-pill);
-  padding:0 18px;min-height:36px;
-  display:inline-flex;align-items:center;gap:6px;
-  transition:background .15s,box-shadow .15s,color .15s;
-}
-.chip:hover{background:var(--md-surface-container-high)}
-.chip .n{font-size:12px;color:var(--md-on-surface-variant);opacity:.8}
-.chip.active{
-  background:var(--md-primary-container);border-color:var(--md-primary-container);
-  color:var(--md-on-primary-container);font-weight:600;
-}
-.chip.active .n{color:var(--md-on-primary-container);opacity:.85}
 .toolbar-top{display:block}
-.sub-chips{display:none;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--md-outline-variant)}
+/* 筛选按钮组（MDL 风格：平面文字按钮，选中=凸起主色） */
+.chips{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;font-size:14px;font-weight:500;letter-spacing:.02em;line-height:20px;
+  background:transparent;color:var(--md-text-2);
+  border-radius:var(--radius);
+  padding:0 16px;min-height:36px;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background .2s,box-shadow .2s,color .2s;
+}
+.chip:hover{background:rgba(0,0,0,.06)}
+.chip:active{background:rgba(0,0,0,.12)}
+.chip .n{font-size:12px;color:var(--md-text-2);opacity:.8}
+.chip.active{
+  background:var(--md-primary);color:#fff;box-shadow:var(--elev-2dp);
+}
+.chip.active .n{color:#fff;opacity:.85}
+
+/* 未发布二级分类（同样按钮组风格，更小） */
+.sub-chips{display:none;flex-wrap:wrap;gap:4px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--md-divider-soft)}
 .sub-chips:not([hidden]){display:flex}
-.sub-chips::before{content:"未发布分类";font-size:12px;font-weight:500;letter-spacing:.3px;color:var(--md-on-surface-variant);flex:none;margin-right:2px}
+.sub-chips::before{content:"未发布分类";font-size:12px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--md-text-2);flex:none;margin-right:4px}
 .subchip{
-  flex:none;font-size:13px;font-weight:500;line-height:18px;
-  background:var(--md-surface);color:var(--md-on-surface-variant);
-  border:1px solid var(--md-outline);border-radius:var(--r-pill);
+  flex:none;font-size:13px;font-weight:500;letter-spacing:.02em;line-height:18px;
+  background:transparent;color:var(--md-text-2);
+  border-radius:var(--radius);
   padding:0 14px;min-height:32px;
   display:inline-flex;align-items:center;gap:5px;
-  transition:background .15s,color .15s;
+  transition:background .2s,color .2s;
 }
-.subchip:hover{background:var(--md-surface-container-high)}
+.subchip:hover{background:rgba(0,0,0,.06)}
+.subchip:active{background:rgba(0,0,0,.12)}
 .subchip .n{font-size:11px;opacity:.8}
-.subchip.active{background:var(--md-primary-container);border-color:var(--md-primary-container);color:var(--md-on-primary-container);font-weight:600}
-.subchip.active .n{color:var(--md-on-primary-container);opacity:.85}
-.toolbar-row2{display:flex;gap:10px;margin-top:14px}
-/* MD3 输入框（outlined text field） */
+.subchip.active{background:var(--md-primary);color:#fff;box-shadow:var(--elev-2dp)}
+.subchip.active .n{color:#fff;opacity:.85}
+
+.toolbar-row2{display:flex;gap:12px;margin-top:14px;align-items:center}
+/* MDL 下划线文本框（文本字段） */
 .search-box{
-  flex:1;display:flex;align-items:center;gap:8px;
-  border:1px solid var(--md-outline);border-radius:var(--r-sm);
-  padding:0 14px;background:var(--md-surface);min-width:0;height:44px;
-  transition:border-color .15s,box-shadow .15s;
+  flex:1;display:flex;align-items:center;gap:8px;min-width:0;
+  border-bottom:1px solid var(--md-text-2);
+  padding:6px 2px;background:transparent;height:auto;
+  transition:border-color .2s,border-bottom-width .1s;
 }
-.search-box:focus-within{border-color:var(--md-primary);border-width:2px;padding:0 13px}
-.search-box svg{color:var(--md-on-surface-variant);flex:none}
+.search-box:focus-within{border-bottom:2px solid var(--md-primary);padding-bottom:5px}
+.search-box svg{color:var(--md-text-2);flex:none}
 .search-box input{
   border:none;outline:none;background:none;flex:1;min-width:0;
-  font-family:var(--pixel);font-size:14px;color:var(--md-on-surface);
+  font-family:var(--font);font-size:14px;color:var(--md-text);
 }
-.search-box input::placeholder{color:var(--md-on-surface-variant);opacity:.7}
-/* MD3 文本按钮 */
+.search-box input::placeholder{color:var(--md-text-2);opacity:.8}
+/* MDL 平面文字按钮 */
 .sort-btn{
-  flex:none;font-size:14px;font-weight:500;
-  color:var(--md-primary);border-radius:var(--r-pill);
-  padding:0 18px;height:44px;
-  transition:background .15s;
+  flex:none;font-size:14px;font-weight:500;letter-spacing:.02em;
+  color:var(--md-primary);border-radius:var(--radius);
+  padding:0 16px;min-height:36px;
+  transition:background .2s;
 }
-.sort-btn:hover{background:var(--md-primary-container)}
+.sort-btn:hover{background:rgba(67,160,71,.10)}
+.sort-btn:active{background:rgba(67,160,71,.20)}
 @media (min-width:768px){
-  .toolbar-top{display:flex;align-items:center;gap:14px}
+  .toolbar-top{display:flex;align-items:center;gap:16px}
   .chips{overflow:visible;flex:none}
   .toolbar-row2{margin-top:0;flex:1;justify-content:flex-end}
-  .search-box{max-width:320px}
 }
 
 /* ============ 版本列表 ============ */
 .vlist{display:flex;flex-direction:column;gap:12px}
-/* MD3 列表项卡片 */
 .vrow{
-  background:var(--md-surface);border-radius:var(--r);box-shadow:var(--elev-1);
-  overflow:hidden;transition:box-shadow .15s;
+  background:var(--md-surface);border-radius:var(--radius);box-shadow:var(--elev-2dp);
+  overflow:hidden;transition:box-shadow .2s;
 }
-.vrow:hover{box-shadow:var(--elev-2)}
-.vrow.open{box-shadow:var(--elev-2);outline:2px solid var(--md-primary-container)}
-/* 「未发布」栏目内的类型板块标题（MD3 小标题 + 分隔线） */
+.vrow:hover{box-shadow:var(--elev-4dp)}
+.vrow.open{box-shadow:var(--elev-4dp)}
+/* 未发布栏目内类型板块标题 */
 .vsection{display:flex;align-items:center;gap:10px;margin:26px 0 10px;padding:0 4px}
 .vsection:first-child{margin-top:2px}
-.vs-name{font-size:15px;font-weight:500;color:var(--md-on-surface);flex:none}
-.vs-count{font-size:12px;font-weight:500;color:var(--md-on-surface-variant);background:var(--md-surface-variant);border-radius:var(--r-pill);padding:2px 10px;flex:none}
-.vsection::after{content:"";flex:1;height:1px;background:var(--md-outline-variant)}
+.vs-name{font-size:15px;font-weight:500;color:var(--md-text);flex:none}
+.vs-count{font-size:12px;font-weight:500;color:var(--md-text-2);background:rgba(0,0,0,.06);border-radius:var(--radius);padding:2px 8px;flex:none}
+.vsection::after{content:"";flex:1;height:1px;background:var(--md-divider)}
 .vrow-main{
   width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
   background:none;text-align:left;
   padding:14px 16px;min-height:60px;
 }
-.chev{color:var(--md-on-surface-variant);font-size:12px;transition:transform .18s;flex:none}
+.chev{color:var(--md-text-2);font-size:12px;transition:transform .18s;flex:none}
 .vrow.open .chev{transform:rotate(90deg);color:var(--md-primary)}
-.vid{font-size:16px;font-weight:500;color:var(--md-on-surface);min-width:0;flex:0 1 auto;overflow-wrap:anywhere}
-.valias{font-size:13px;color:var(--md-on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;flex:0 1 auto}
-/* MD3 tonal chips（类型/标签） */
+.vid{font-size:16px;font-weight:500;color:var(--md-text);min-width:0;flex:0 1 auto;overflow-wrap:anywhere}
+.valias{font-size:13px;color:var(--md-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;flex:0 1 auto}
+/* MDL 类型标签（小方角，深前景+浅背景） */
 .badge{
-  font-size:11px;font-weight:600;letter-spacing:.3px;border-radius:8px;padding:3px 9px;flex:none;line-height:1.4;
+  font-size:11px;font-weight:600;letter-spacing:.3px;border-radius:var(--radius);padding:3px 8px;flex:none;line-height:1.4;
 }
-.badge.release{color:var(--c-release-fg);background:var(--c-release-bg)}
-.badge.snapshot{color:var(--c-snapshot-fg);background:var(--c-snapshot-bg)}
-.badge.old_beta{color:var(--c-beta-fg);background:var(--c-beta-bg)}
-.badge.old_alpha{color:var(--c-alpha-fg);background:var(--c-alpha-bg)}
-.badge.pending{color:var(--c-pending-fg);background:var(--c-pending-bg)}
-.badge.standalone{color:var(--c-standalone-fg);background:var(--c-standalone-bg)}
-.badge.af{color:var(--c-af-fg);background:var(--c-af-bg)}
-.badge.unrel{color:var(--c-unrel-fg);background:var(--c-unrel-bg)}
-.badge.other{color:var(--c-other-fg);background:var(--c-other-bg)}
-.badge.newest{color:var(--md-on-primary);background:var(--md-primary)}
-.vdate{margin-left:auto;font-size:12px;color:var(--md-on-surface-variant);flex:none}
+.badge.release{color:var(--c-release);background:var(--c-release-bg)}
+.badge.snapshot{color:var(--c-snapshot);background:var(--c-snapshot-bg)}
+.badge.old_beta{color:var(--c-beta);background:var(--c-beta-bg)}
+.badge.old_alpha{color:var(--c-alpha);background:var(--c-alpha-bg)}
+.badge.pending{color:var(--c-pending);background:var(--c-pending-bg)}
+.badge.standalone{color:var(--c-standalone);background:var(--c-standalone-bg)}
+.badge.af{color:var(--c-af);background:var(--c-af-bg)}
+.badge.unrel{color:var(--c-unrel);background:var(--c-unrel-bg)}
+.badge.other{color:var(--c-other);background:var(--c-other-bg)}
+.badge.newest{color:#fff;background:var(--md-primary)}
+.vdate{margin-left:auto;font-size:12px;color:var(--md-text-2);flex:none}
 @media (max-width:560px){.vdate{display:none}}
-/* MD3 实心按钮（下载 ZIP） */
+/* MDL 凸起彩色按钮（下载 ZIP） */
 .dl-btn{
   flex:none;display:inline-flex;align-items:center;gap:6px;margin-left:auto;
-  font-size:14px;font-weight:600;letter-spacing:.2px;
-  color:var(--md-on-primary);background:var(--md-primary);border-radius:var(--r-pill);
-  padding:0 20px;min-height:40px;box-shadow:var(--elev-1);
-  transition:box-shadow .15s,background .15s,transform .1s;
+  font-size:14px;font-weight:500;letter-spacing:.04em;
+  color:#fff;background:var(--md-primary);border-radius:var(--radius);
+  padding:0 20px;min-height:40px;box-shadow:var(--elev-2dp);
+  transition:box-shadow .2s,background .2s,transform .1s;
 }
-.dl-btn:hover{background:#276B2A;box-shadow:var(--elev-2)}
-.dl-btn:active{transform:scale(.96)}
-.dl-btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
+.dl-btn:hover{background:var(--md-primary-dark);box-shadow:var(--elev-4dp)}
+.dl-btn:active{box-shadow:var(--elev-6dp);transform:scale(.98)}
+.dl-btn:disabled{opacity:.5;cursor:wait;box-shadow:none;transform:none;background:var(--md-primary)}
 .spin{
   width:13px;height:13px;flex:none;
   border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;
@@ -280,77 +287,78 @@ a{color:var(--md-primary);text-decoration:none}
 @keyframes rot{to{transform:rotate(360deg)}}
 
 /* 版本详情 */
-.vdetail{border-top:1px solid var(--md-outline-variant);padding:18px 16px;background:var(--md-surface-container)}
+.vdetail{border-top:1px solid var(--md-divider-soft);padding:18px 16px;background:#fff}
 .dsec{margin-bottom:18px}
 .dsec:last-child{margin-bottom:0}
 .dsec h4{
-  font-size:14px;font-weight:600;color:var(--md-on-surface);margin-bottom:12px;
+  font-size:14px;font-weight:500;color:var(--md-text);margin-bottom:12px;
   display:flex;align-items:center;gap:8px;
 }
 .dsec h4::before{
-  content:"";width:6px;height:18px;background:var(--md-primary);
-  border-radius:999px;flex:none;
+  content:"";width:4px;height:18px;background:var(--md-primary);
+  border-radius:2px;flex:none;
 }
 .meta-table{width:100%;border-collapse:collapse;font-size:13px}
-.meta-table td{padding:8px 10px;border-bottom:1px solid var(--md-outline-variant);vertical-align:top}
+.meta-table td{padding:8px 10px;border-bottom:1px solid var(--md-divider-soft);vertical-align:top}
 .meta-table tr:last-child td{border-bottom:none}
-.meta-table .k{color:var(--md-on-surface-variant);white-space:nowrap;width:96px}
-.meta-table .v{color:var(--md-on-surface);word-break:break-all}
+.meta-table .k{color:var(--md-text-2);white-space:nowrap;width:96px}
+.meta-table .v{color:var(--md-text);word-break:break-all}
 .act-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-/* MD3 填充色调按钮（filled tonal） */
+/* MDL 凸起/平面按钮 */
 .act-btn{
   display:inline-flex;align-items:center;gap:7px;
-  font-size:14px;font-weight:600;
-  border-radius:var(--r-pill);padding:0 20px;min-height:44px;
-  background:var(--md-secondary-container);color:var(--md-on-secondary-container);
-  transition:box-shadow .15s,transform .1s;
+  font-size:14px;font-weight:500;letter-spacing:.02em;
+  border-radius:var(--radius);padding:0 20px;min-height:44px;
+  background:var(--md-primary);color:#fff;box-shadow:var(--elev-2dp);
+  transition:box-shadow .2s,background .2s,transform .1s;
 }
-.act-btn:hover{box-shadow:var(--elev-1)}
-.act-btn:active{transform:scale(.97)}
-.act-btn.blue{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+.act-btn:hover{background:var(--md-primary-dark);box-shadow:var(--elev-4dp)}
+.act-btn:active{transform:scale(.98);box-shadow:var(--elev-6dp)}
+.act-btn.blue{background:var(--md-primary-dark)}
 .link-item{
-  border:1px solid var(--md-outline-variant);border-radius:var(--r-sm);
+  border:1px solid var(--md-divider);border-radius:var(--radius);
   padding:12px 14px;margin-bottom:10px;background:var(--md-surface);
 }
-.link-item .src{font-size:12px;font-weight:500;color:var(--md-on-surface-variant);margin-bottom:5px}
+.link-item .src{font-size:12px;font-weight:500;color:var(--md-text-2);margin-bottom:5px}
 .link-item code{
-  display:block;font-family:var(--mono);font-size:11.5px;color:var(--md-on-surface-variant);
+  display:block;font-family:var(--mono);font-size:11.5px;color:var(--md-text-2);
   word-break:break-all;line-height:1.6;
 }
 .link-btns{display:flex;gap:8px;margin-top:10px}
-/* MD3 文本按钮（小型） */
+/* MDL 平面文字按钮（小型） */
 .mini-btn{
-  font-size:12px;font-weight:600;
-  color:var(--md-primary);border-radius:var(--r-pill);
+  font-size:12px;font-weight:500;letter-spacing:.02em;
+  color:var(--md-primary);border-radius:var(--radius);
   padding:6px 14px;min-height:32px;
-  transition:background .15s;
+  transition:background .2s;
 }
-.mini-btn:hover{background:var(--md-primary-container)}
+.mini-btn:hover{background:rgba(67,160,71,.10)}
+.mini-btn:active{background:rgba(67,160,71,.20)}
 .note-line{
-  font-size:12px;color:var(--md-on-surface-variant);line-height:1.8;
-  border-left:3px solid var(--md-outline-variant);padding-left:12px;margin-top:10px;
+  font-size:12px;color:var(--md-text-2);line-height:1.8;
+  border-left:3px solid var(--md-divider);padding-left:12px;margin-top:10px;
 }
-.note-line b{color:var(--md-on-surface)}
+.note-line b{color:var(--md-text)}
 
-/* 状态卡（加载/空/错误） */
+/* 状态卡 */
 .state-card{
-  background:var(--md-surface);border-radius:var(--r);box-shadow:var(--elev-1);
+  background:var(--md-surface);border-radius:var(--radius);box-shadow:var(--elev-2dp);
   padding:48px 24px;text-align:center;
 }
-.state-card .big{font-size:16px;font-weight:600;margin-bottom:6px}
-.state-card .sm{font-size:13px;color:var(--md-on-surface-variant);line-height:1.8}
-/* MD3 实心按钮 */
+.state-card .big{font-size:16px;font-weight:500;margin-bottom:6px}
+.state-card .sm{font-size:13px;color:var(--md-text-2);line-height:1.8}
+/* MDL 凸起按钮 */
 .load-btn{
-  font-size:14px;font-weight:600;letter-spacing:.2px;
-  color:var(--md-on-primary);background:var(--md-primary);border-radius:var(--r-pill);
-  padding:0 28px;margin-top:18px;min-height:44px;box-shadow:var(--elev-1);
-  transition:box-shadow .15s,background .15s;
+  font-size:14px;font-weight:500;letter-spacing:.04em;
+  color:#fff;background:var(--md-primary);border-radius:var(--radius);
+  padding:0 28px;margin-top:18px;min-height:44px;box-shadow:var(--elev-2dp);
+  transition:box-shadow .2s,background .2s;
 }
-.load-btn:hover{background:#276B2A;box-shadow:var(--elev-2)}
+.load-btn:hover{background:var(--md-primary-dark);box-shadow:var(--elev-4dp)}
 
 /* 列表底部 */
 .list-foot{text-align:center;margin:20px 0 10px}
-.list-count{font-size:12px;color:var(--md-on-surface-variant);margin-top:12px}
+.list-count{font-size:12px;color:var(--md-text-2);margin-top:12px}
 
 /* MC 方块加载动画 */
 .cube-loader{
@@ -358,8 +366,8 @@ a{color:var(--md-primary);text-decoration:none}
   transform-style:preserve-3d;animation:spin3d 2.4s linear infinite;
 }
 .cube-loader i{
-  position:absolute;inset:0;border:1.5px solid rgba(46,125,50,.30);
-  background:rgba(46,125,50,.05);border-radius:3px;
+  position:absolute;inset:0;border:1.5px solid rgba(67,160,71,.30);
+  background:rgba(67,160,71,.05);border-radius:3px;
 }
 .cube-loader i:nth-child(1){transform:translateZ(16px)}
 .cube-loader i:nth-child(2){transform:rotateY(180deg) translateZ(16px)}
@@ -372,154 +380,168 @@ a{color:var(--md-primary);text-decoration:none}
 .cube-loader i:nth-child(9){transform:rotateX(45deg) rotateY(-45deg) translateZ(16px)}
 @keyframes spin3d{from{transform:rotateX(0) rotateY(0)}to{transform:rotateX(360deg) rotateY(360deg)}}
 
-/* ============ 弹窗（MD3 对话框 / 底部抽屉） ============ */
+/* ============ 弹窗（MDL 对话框 / 底部抽屉） ============ */
 .modal-layer{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}
 .modal-layer[hidden]{display:none}
-.modal-backdrop{position:absolute;inset:0;background:rgba(26,29,22,.32)}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.32)}
 .modal-sheet{
   position:relative;width:100%;max-width:560px;
-  background:var(--md-surface);box-shadow:var(--elev-4);
-  border-radius:28px 28px 0 0;padding:8px 20px calc(20px + env(safe-area-inset-bottom));
-  animation:sheetup .26s cubic-bezier(.32,.72,.35,1);
+  background:var(--md-surface);box-shadow:var(--elev-6dp);
+  border-radius:var(--radius);padding:8px 20px calc(20px + env(safe-area-inset-bottom));
+  animation:sheetup .26s cubic-bezier(.4,0,.2,1);
   max-height:92vh;overflow-y:auto;
 }
 @keyframes sheetup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.sheet-handle{display:block;width:32px;height:4px;border-radius:999px;background:var(--md-outline);margin:8px auto 14px}
+.sheet-handle{display:block;width:32px;height:4px;border-radius:999px;background:rgba(0,0,0,.26);margin:8px auto 14px}
 .modal-title{
   font-size:20px;font-weight:500;text-align:center;
   padding-bottom:14px;margin-bottom:16px;
 }
 .modal-ver{
-  text-align:center;font-size:13px;color:var(--md-on-surface-variant);margin-bottom:16px;
+  text-align:center;font-size:13px;color:var(--md-text-2);margin-bottom:16px;
 }
-.modal-ver .vid{color:var(--md-on-surface);font-weight:600;font-size:16px}
-/* MD3 分段按钮（客户端/服务端） */
+.modal-ver .vid{color:var(--md-text);font-weight:500;font-size:16px}
+/* MDL 分段按钮（客户端/服务端） */
 .kind-seg{
-  display:flex;background:var(--md-surface-variant);
-  border-radius:var(--r-pill);padding:4px;margin-bottom:16px;
+  display:flex;background:rgba(0,0,0,.06);
+  border-radius:var(--radius);padding:4px;margin-bottom:16px;
 }
 .kind-seg button{
-  flex:1;font-size:14px;font-weight:600;
-  border-radius:var(--r-pill);padding:10px;min-height:40px;
-  color:var(--md-on-surface-variant);background:transparent;
-  transition:background .15s,color .15s,box-shadow .15s;
+  flex:1;font-size:14px;font-weight:500;letter-spacing:.02em;
+  border-radius:var(--radius);padding:10px;min-height:40px;
+  color:var(--md-text-2);background:transparent;
+  transition:background .2s,color .2s,box-shadow .2s;
 }
-.kind-seg button.active{background:var(--md-surface);color:var(--md-primary);box-shadow:var(--elev-1)}
+.kind-seg button.active{background:var(--md-surface);color:var(--md-primary);box-shadow:var(--elev-2dp)}
 .kind-seg button:disabled{opacity:.4;cursor:not-allowed}
-/* MD3 列表项按钮（下载源卡片） */
+/* MDL 列表项卡片（下载源） */
 .src-card{
   width:100%;display:flex;align-items:center;gap:14px;text-align:left;
-  background:var(--md-surface);border:1px solid var(--md-outline-variant);border-radius:var(--r-sm);
+  background:var(--md-surface);border:1px solid var(--md-divider);border-radius:var(--radius);
   padding:14px 16px;margin-bottom:12px;
-  transition:box-shadow .15s,transform .1s,border-color .15s;
+  transition:box-shadow .2s,transform .1s,border-color .2s;
 }
-.src-card:hover{border-color:var(--md-outline);box-shadow:var(--elev-1)}
+.src-card:hover{border-color:var(--md-primary);box-shadow:var(--elev-2dp)}
 .src-card:active{transform:scale(.99)}
 .src-card .ic{
-  width:48px;height:48px;flex:none;border-radius:14px;
+  width:48px;height:48px;flex:none;border-radius:var(--radius);
   display:grid;place-items:center;font-size:22px;
-  background:var(--md-surface-container);
+  background:rgba(0,0,0,.04);
 }
 .src-card.official .ic{background:var(--c-release-bg)}
 .src-card.bmcl .ic{background:var(--c-snapshot-bg)}
-.src-card .t{font-size:15px;font-weight:600;display:block;color:var(--md-on-surface)}
-.src-card .d{font-size:12px;color:var(--md-on-surface-variant);line-height:1.6;margin-top:3px}
-.src-card .arrow{margin-left:auto;color:var(--md-on-surface-variant);font-size:20px;flex:none}
+.src-card .t{font-size:15px;font-weight:500;display:block;color:var(--md-text)}
+.src-card .d{font-size:12px;color:var(--md-text-2);line-height:1.6;margin-top:3px}
+.src-card .arrow{margin-left:auto;color:var(--md-text-2);font-size:20px;flex:none}
 .modal-note{
-  font-size:12px;color:var(--md-on-surface-variant);line-height:1.8;
-  background:var(--md-surface-container);border-radius:var(--r-sm);
+  font-size:12px;color:var(--md-text-2);line-height:1.8;
+  background:rgba(0,0,0,.04);border-radius:var(--radius);
   padding:12px 14px;margin:4px 0 16px;
 }
-.modal-note b{color:var(--md-on-surface)}
-/* MD3 文本按钮（取消） */
+.modal-note b{color:var(--md-text)}
+/* MDL 平面文字按钮（取消） */
 .modal-cancel{
-  width:100%;font-size:14px;font-weight:600;
-  padding:13px;border-radius:var(--r-pill);min-height:48px;
+  width:100%;font-size:14px;font-weight:500;letter-spacing:.02em;
+  padding:13px;border-radius:var(--radius);min-height:48px;
   background:transparent;color:var(--md-primary);
-  transition:background .15s;
+  transition:background .2s;
 }
-.modal-cancel:hover{background:var(--md-primary-container)}
+.modal-cancel:hover{background:rgba(67,160,71,.10)}
+.modal-cancel:active{background:rgba(67,160,71,.20)}
 @media (min-width:640px){
   .modal-layer{align-items:center}
-  .modal-sheet{border-radius:28px;padding:12px 24px 24px;animation:popin .22s cubic-bezier(.32,.72,.35,1);box-shadow:var(--elev-4)}
+  .modal-sheet{border-radius:var(--radius);padding:12px 24px 24px;animation:popin .22s cubic-bezier(.4,0,.2,1);box-shadow:var(--elev-6dp)}
   .sheet-handle{display:none}
-  @keyframes popin{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+  @keyframes popin{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
 }
 
-/* ============ 打包进度面板（MD3 卡片 + 线性进度条） ============ */
+/* ============ 打包进度面板（MDL 卡片 + 线性进度条） ============ */
 .progress-panel{
   position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:120;
-  background:var(--md-surface);box-shadow:var(--elev-4);border-radius:var(--r);
+  background:var(--md-surface);box-shadow:var(--elev-6dp);border-radius:var(--radius);
   padding:16px 18px;
 }
 .progress-panel[hidden]{display:none}
 @media (min-width:640px){.progress-panel{left:auto;right:24px;bottom:24px;width:400px}}
-.pp-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-bottom:4px}
-.pp-head .st{margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--md-on-surface-variant)}
+.pp-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;margin-bottom:4px}
+.pp-head .st{margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--md-text-2)}
 .pp-toggle{
-  font-size:12px;font-weight:600;
-  color:var(--md-primary);border-radius:var(--r-pill);
+  font-size:12px;font-weight:500;letter-spacing:.02em;
+  color:var(--md-primary);border-radius:var(--radius);
   padding:4px 12px;min-height:26px;margin-left:8px;
 }
-.pp-toggle:hover{background:var(--md-primary-container)}
+.pp-toggle:hover{background:rgba(67,160,71,.10)}
 .pp-stage{
-  font-size:12px;color:var(--md-on-surface-variant);margin-bottom:12px;
+  font-size:12px;color:var(--md-text-2);margin-bottom:12px;
   font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.pp-bar{height:8px;background:var(--md-surface-variant);border-radius:var(--r-pill);overflow:hidden}
+.pp-bar{height:4px;background:rgba(67,160,71,.24);border-radius:999px;overflow:hidden}
 .pp-bar i{
-  display:block;height:100%;width:0;border-radius:var(--r-pill);
+  display:block;height:100%;width:0;border-radius:999px;
   background:var(--md-primary);
   transition:width .2s;
 }
 .pp-console{
-  margin-top:12px;border-radius:var(--r-sm);background:var(--md-inverse-surface);
+  margin-top:12px;border-radius:var(--radius);background:#263238;
   padding:10px 12px;height:120px;overflow-y:auto;overscroll-behavior:contain;
-  font-family:var(--mono);font-size:10.5px;line-height:1.8;color:var(--md-inverse-on-surface);
+  font-family:var(--mono);font-size:10.5px;line-height:1.8;color:#eceff1;
   -webkit-overflow-scrolling:touch;
 }
 .pp-console[hidden]{display:none}
 .pp-console .ln{white-space:pre-wrap;word-break:break-all}
-.pp-console .ln .ts{color:#8A9384;margin-right:6px}
-.pp-console .ln.sys{color:#7DB8F5}
-.pp-console .ln.info{color:var(--md-inverse-on-surface)}
-.pp-console .ln.ok{color:#8FD06A}
-.pp-console .ln.err{color:#F08A8A}
+.pp-console .ln .ts{color:#78909c;margin-right:6px}
+.pp-console .ln.sys{color:#82b1ff}
+.pp-console .ln.info{color:#eceff1}
+.pp-console .ln.ok{color:#aed581}
+.pp-console .ln.err{color:#ef9a9a}
 .pp-actions{margin-top:12px;text-align:right}
 .pp-cancel{
-  font-size:12px;font-weight:600;
-  color:var(--md-primary);border-radius:var(--r-pill);padding:6px 18px;min-height:34px;
+  font-size:12px;font-weight:500;letter-spacing:.02em;
+  color:var(--md-primary);border-radius:var(--radius);padding:6px 18px;min-height:34px;
 }
-.pp-cancel:hover{background:var(--md-primary-container)}
+.pp-cancel:hover{background:rgba(67,160,71,.10)}
+.pp-cancel:active{background:rgba(67,160,71,.20)}
 .pp-cancel:disabled{opacity:.5;cursor:default}
 
-/* ============ Toast → MD3 Snackbar ============ */
+/* ============ Toast → MDL Snackbar ============ */
 .toast-wrap{
   position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);
   z-index:200;display:flex;flex-direction:column;gap:10px;align-items:center;
   width:max-content;max-width:92vw;pointer-events:none;
 }
 .toast{
-  background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);
-  padding:14px 18px;font-size:13px;font-weight:500;border-radius:8px;
-  box-shadow:var(--elev-3);
+  background:#323232;color:#fff;
+  padding:14px 18px;font-size:13px;font-weight:400;letter-spacing:.02em;border-radius:var(--radius);
+  box-shadow:var(--elev-6dp);
   animation:tin .22s ease-out;line-height:1.6;max-width:92vw;
 }
-.toast.err{background:#5D2B28;color:#FCEEEE}
+.toast.err{background:#bf360c}
 .toast.out{animation:tout .22s ease-in forwards}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes tout{to{opacity:0;transform:translateY(12px)}}
 
 /* ============ 页脚 ============ */
 footer{
-  margin-top:44px;padding:26px 0 18px;border-top:1px solid var(--md-outline-variant);
-  color:var(--md-on-surface-variant);font-size:12px;line-height:2;text-align:center;
+  margin-top:44px;padding:26px 0 18px;border-top:1px solid var(--md-divider-soft);
+  color:var(--md-text-2);font-size:12px;line-height:2;text-align:center;
 }
-footer code{font-family:var(--mono);font-size:11px;color:var(--md-on-surface-variant)}
-footer b{color:var(--md-on-surface)}
+footer code{font-family:var(--mono);font-size:11px;color:var(--md-text-2)}
+footer b{color:var(--md-text)}
 footer .flinks{margin-top:8px}
-footer .flinks a{color:var(--md-primary);font-weight:600}
+footer .flinks a{color:var(--md-primary);font-weight:500}
+
+/* ============ 涟漪 (MDL ripple) ============ */
+.dl-btn,.load-btn,.act-btn,.chip,.subchip,.sort-btn,.modal-cancel,.pp-cancel,.mini-btn,.gh,.src-card,.kind-seg button{position:relative;overflow:hidden}
+.ripple{
+  position:absolute;border-radius:50%;
+  background:currentColor;opacity:.22;
+  transform:scale(0);transform-origin:center;
+  pointer-events:none;
+  animation:mdl-ripple .6s cubic-bezier(.4,0,.2,1);
+}
+@keyframes mdl-ripple{to{transform:scale(1);opacity:0}}
 </style>
+
 
 </head>
 <body>
@@ -1506,6 +1528,25 @@ $("#loadMore").addEventListener("click", () => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !$("#modalLayer").hidden) closeModal();
 });
+
+/* ---------------- MDL 涟漪(ripple) 交互 ---------------- */
+const RIPPLE_SEL = ".dl-btn,.load-btn,.act-btn,.chip,.subchip,.sort-btn,.modal-cancel,.pp-cancel,.mini-btn,.gh,.src-card,.kind-seg button";
+function spawnRipple(host, x, y) {
+  const r = host.getBoundingClientRect();
+  const size = Math.max(r.width, r.height) * 2;
+  const s = document.createElement("span");
+  s.className = "ripple";
+  s.style.width = s.style.height = size + "px";
+  s.style.left = (x - r.left - size / 2) + "px";
+  s.style.top = (y - r.top - size / 2) + "px";
+  host.appendChild(s);
+  s.addEventListener("animationend", () => s.remove());
+}
+document.addEventListener("pointerdown", (e) => {
+  const host = e.target.closest(RIPPLE_SEL);
+  if (!host || host.disabled) return;
+  spawnRipple(host, e.clientX, e.clientY);
+}, { passive: true });
 
 boot();
 </script>
