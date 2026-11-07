@@ -14,54 +14,60 @@
 <style>
 /* ============================================================
    Minecraft 全版本下载器 — Material Design 3 (Material You) 风格
-   参考：github.com/material-components/material-web 官方 token
-   色彩：官方 HCT 算法生成的绿色主题 light scheme
-   - surface 近白微绿 (#FCFDF6) 背景 + surface-tint 层级
-   - 圆角：卡片 12px / 按钮 pill / chip 8~pill / field 4px / sheet 28px
-   - 阴影：MD3 极淡 elevation overlay（靠颜色层级而非厚阴影）
-   - 字体：Roboto + MD3 type scale
+   参考：m3.material.io/foundations + material-components/material-web 官方 token
+   - 配色：官方 HCT 算法生成的绿色 light/dark 双方案（中性表面，仅容器与色调层带绿）
+   - 形状：corner extra-small 4 / small 8 / medium 12 / large 16 / extra-large 28 / full(pill)
+   - 层级：MD3 官方 dp 阴影（level1≈1dp）+ surface-tint 色调层（凸起表面叠加主色）
+   - 排版：MD3 type scale（Roboto）
+   - 组件：MD3 搜索栏(28dp 圆角)、pill filter chip、elevated card、filled/tonal/text/outlined button
    ============================================================ */
 :root{
-  /* ---- 官方 HCT 生成的绿色 light scheme ---- */
-  --primary:#006E1C;
+  color-scheme: light;
+  /* ---- 官方 HCT 生成的绿色 light scheme（表面为中性近白，仅容器带绿） ---- */
+  --primary:#1B6D24;
   --on-primary:#FFFFFF;
-  --primary-container:#94F990;
+  --primary-container:#A3F69C;
   --on-primary-container:#002204;
   --secondary:#52634F;
   --on-secondary:#FFFFFF;
-  --secondary-container:#D5E8CF;
+  --secondary-container:#D6E8CE;
   --on-secondary-container:#111F0F;
   --tertiary:#38656A;
+  --on-tertiary:#FFFFFF;
   --tertiary-container:#BCEBF0;
   --on-tertiary-container:#002023;
-  --surface:#FCFDF6;            /* 背景/app bar */
+  --error:#BA1A1A;
+  --on-error:#FFFFFF;
+  --error-container:#FFDAD6;
+  --on-error-container:#410002;
+  --surface:#F9FAF3;
   --on-surface:#1A1C19;
   --surface-variant:#DEE5D8;
   --on-surface-variant:#424940;
   --outline:#72796F;
   --outline-variant:#C2C9BD;
   --surface-container-lowest:#FFFFFF;
-  --surface-container-low:#F6F8F0;
-  --surface-container:#EFF3E8;
-  --surface-container-high:#E9EEE1;
-  --surface-container-highest:#E3E9DA;
-  --surface-dim:#DCE1D4;
-  --surface-bright:#FFFFFF;
-  --surface-tint:#94F990;        /* 凸起表面叠加的主色 */
+  --surface-container-low:#F3F4EE;
+  --surface-container:#EEEEE8;
+  --surface-container-high:#E8E9E2;
+  --surface-container-highest:#E2E3DD;
+  --surface-dim:#DADAD4;
+  --surface-tint:#1B6D24;
   --inverse-surface:#2F312D;
-  --inverse-on-surface:#F0F1EB;
-  --inverse-primary:#78DC77;
-  --error:#BA1A1A;
-  --error-container:#FFDAD6;
-  --on-error:#FFFFFF;
-  --on-error-container:#410002;
+  --inverse-on-surface:#E2E3DD;
+  --inverse-primary:#88D982;
   --shadow:#000000;
   --scrim:rgba(0,0,0,.32);
+  /* MD3 状态层（hover/press 叠加在主色上的色调） */
+  --state-hover:rgba(27,109,36,.08);
+  --state-press:rgba(27,109,36,.12);
+  --state-hover-neutral:rgba(26,28,25,.08);
+  --state-press-neutral:rgba(26,28,25,.12);
 
-  /* ---- MD3 elevation overlay（官方极淡阴影） ---- */
+  /* ---- MD3 elevation（官方 dp 阴影配方） ---- */
   --elev-0:none;
-  --elev-1:0 1px 2px 0 rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
-  --elev-2:0 1px 2px 0 rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
+  --elev-1:0 1px 2px rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
+  --elev-2:0 1px 2px rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
   --elev-3:0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px 0 rgba(0,0,0,.30);
 
   /* ---- MD3 type scale（Roboto） ---- */
@@ -78,115 +84,152 @@
   --f-label-s:11px/16px 'Roboto';
 }
 
+/* ==================== MD3 深色方案（同种子动态深色） ==================== */
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --primary:#88D982;
+    --on-primary:#003909;
+    --primary-container:#005312;
+    --on-primary-container:#A3F69C;
+    --secondary:#BACCB3;
+    --on-secondary:#253423;
+    --secondary-container:#3B4B38;
+    --on-secondary-container:#D6E8CE;
+    --tertiary:#A0CFD4;
+    --on-tertiary:#00363B;
+    --tertiary-container:#1F4D52;
+    --on-tertiary-container:#BCEBF0;
+    --error:#FFB4AB;
+    --on-error:#690005;
+    --error-container:#93000A;
+    --on-error-container:#FFB4AB;
+    --surface:#1A1C19;
+    --on-surface:#E2E3DD;
+    --surface-variant:#424940;
+    --on-surface-variant:#C2C9BD;
+    --outline:#8C9388;
+    --outline-variant:#424940;
+    --surface-container-lowest:#0F110E;
+    --surface-container-low:#1F211E;
+    --surface-container:#252723;
+    --surface-container-high:#2F312D;
+    --surface-container-highest:#3A3C37;
+    --surface-dim:#121411;
+    --surface-tint:#88D982;
+    --inverse-surface:#E2E3DD;
+    --inverse-on-surface:#2F312D;
+    --inverse-primary:#1B6D24;
+    --state-hover:rgba(136,217,130,.14);
+    --state-press:rgba(136,217,130,.20);
+    --state-hover-neutral:rgba(226,227,221,.08);
+    --state-press-neutral:rgba(226,227,221,.12);
+  }
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--surface);color:var(--on-surface);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;line-height:1.5}
 a{color:var(--primary);text-decoration:none}
+code{font-family:var(--mono);background:var(--surface-container-high);
+  color:var(--on-surface-variant);padding:1px 6px;border-radius:6px;font-size:.92em}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 .sm{display:none}
 
-/* ============ 应用栏（MD3 surface app bar，非彩色 header） ============ */
+/* ============ 应用栏（MD3 surface app bar，滚动后浮起） ============ */
 .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
   padding:14px 16px;background:var(--surface);color:var(--on-surface);
-  border-bottom:1px solid var(--outline-variant);
   transition:box-shadow .2s ease}
 .topbar.scrolled{box-shadow:var(--elev-2)}
-.topbar .logo{width:34px;height:34px;border-radius:8px;flex:none;
+.topbar .logo{width:34px;height:34px;border-radius:12px;flex:none;
   box-shadow:var(--elev-1)}
-.topbar .brand{font-size:20px;font-weight:500;letter-spacing:.2px;color:var(--on-surface)}
+.topbar .brand{font-size:22px;font-weight:500;letter-spacing:.2px;color:var(--on-surface)}
 .topbar .brand em{font-style:normal;color:var(--primary);font-weight:700}
 .topbar .sp{flex:1}
-.topbar .gh{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;
-  border:1px solid var(--outline);border-radius:9999px;color:var(--on-surface);
+.topbar .gh{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;border:1px solid var(--outline);border-radius:9999px;color:var(--on-surface);
   font:var(--f-label-l);font-weight:500;background:transparent;cursor:pointer;
   transition:background .15s,border-color .15s}
-.topbar .gh:hover{background:var(--surface-container-highest)}
+.topbar .gh:hover{background:var(--state-hover)}
 .topbar .gh:active{transform:scale(.97)}
-.topbar .gh .ic{width:18px;height:18px;fill:var(--on-surface)}
+.topbar .gh .ic{width:18px;height:18px;fill:currentColor}
 .topbar .gh .gt{font-weight:500}
 @media (max-width:520px){.topbar .gh .gt{display:none}.topbar .gh{padding:9px 11px}
-  .topbar .brand{font-size:18px}}
+  .topbar .brand{font-size:19px}}
 
-/* ============ Hero ============ */
-.hero{padding:40px 0 26px;text-align:center}
-.hero h1{font:var(--f-headline-s);font-weight:400;color:var(--on-surface);letter-spacing:.1px;margin-bottom:6px}
-.hero h1 b{color:var(--primary);font-weight:700}
-.hero p{font:var(--f-body-l);color:var(--on-surface-variant);max-width:560px;margin:0 auto}
+/* ============ Hero（MD3 display 排版） ============ */
+.hero{padding:48px 0 30px;text-align:center}
+.hero .cube{width:64px;height:64px;margin-bottom:14px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18))}
+.hero h1{font:var(--f-display);font-weight:400;letter-spacing:-.5px;color:var(--on-surface);margin-bottom:12px}
+.hero h1 .hl{color:var(--primary);font-weight:700}
+.hero .sub{font:var(--f-body-l);color:var(--on-surface-variant);max-width:600px;margin:0 auto;line-height:1.6}
+.hero .sub b{color:var(--on-surface);font-weight:500}
 
-/* ============ 统计 / 状态卡片（elevated card） ============ */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 6px}
-.stat{background:var(--surface-container-lowest);border-radius:16px;padding:18px 16px;
-  box-shadow:var(--elev-1);text-align:center;transition:box-shadow .2s}
+/* ============ 统计卡片（elevated card 16dp 圆角） ============ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 4px}
+.stat{position:relative;overflow:hidden;background:var(--surface-container-lowest);border-radius:16px;
+  padding:20px 16px;box-shadow:var(--elev-1);text-align:center;transition:box-shadow .2s}
 .stat:hover{box-shadow:var(--elev-2)}
-.stat .big{font:var(--f-title-l);font-weight:500;color:var(--on-surface)}
-.stat .small{font:var(--f-label-m);color:var(--on-surface-variant);margin-top:2px}
-.state-card{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
-  margin:8px 0 2px}
-.state-card .st{font:var(--f-label-m);color:var(--on-surface-variant);
-  background:var(--surface-container);border-radius:9999px;padding:5px 12px;
-  display:inline-flex;align-items:center;gap:6px}
-.state-card .st b{color:var(--on-surface);font-weight:500}
+.stat .k{font:var(--f-label-m);color:var(--on-surface-variant)}
+.stat .v{font:var(--f-title-l);font-weight:500;color:var(--on-surface);margin-top:2px}
 @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
 
-/* ============ 工具栏（surface 容器） ============ */
-.toolbar{margin:18px 0 8px;background:var(--surface-container-low);border-radius:16px;
-  padding:14px;box-shadow:var(--elev-1)}
-.toolbar-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* ============ 工具栏（surface-container 容器） ============ */
+.toolbar{position:relative;margin:18px 0 8px;background:var(--surface-container-low);
+  border-radius:28px;padding:18px;box-shadow:var(--elev-1)}
+.toolbar-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-/* ---- MD3 filter chip：pill，扁平，选中=primary-container ---- */
+/* ---- MD3 filter chip：pill，扁平，选中=primary-container 色调层 ---- */
 .chip{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;
-  padding:8px 16px;min-height:36px;border:1px solid transparent;border-radius:9999px;
+  padding:0 20px;height:40px;border:0;border-radius:9999px;
   background:transparent;color:var(--on-surface-variant);cursor:pointer;
   font:var(--f-label-l);font-weight:500;letter-spacing:.1px;
-  transition:background .15s,color .15s,border-color .15s}
-.chip:hover{background:var(--surface-container-highest)}
-.chip:active{transform:scale(.98)}
+  transition:background .15s,color .15s}
+.chip:hover{background:var(--state-hover)}
+.chip:active{background:var(--state-press)}
 .chip .n{font:var(--f-label-s);font-weight:500;opacity:.85}
-.chip.active{background:var(--primary-container);color:var(--on-primary-container);
-  border-color:var(--primary-container)}
+.chip.active{background:var(--primary-container);color:var(--on-primary-container)}
 .chip.active .n{color:var(--on-primary-container);opacity:.8}
 
 .sub-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-  margin-top:12px;padding-top:12px;border-top:1px solid var(--outline-variant)}
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--outline-variant)}
 .sub-chips .lbl{font:var(--f-label-m);color:var(--on-surface-variant);margin-right:2px}
 .subchip{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:5px;
-  padding:6px 13px;min-height:32px;border:1px solid var(--outline-variant);
-  border-radius:9999px;background:transparent;color:var(--on-surface-variant);
-  cursor:pointer;font:var(--f-label-m);font-weight:500;
-  transition:background .15s,color .15s,border-color .15s}
-.subchip:hover{background:var(--surface-container-high)}
-.subchip:active{transform:scale(.98)}
+  padding:0 16px;height:32px;border:0;border-radius:9999px;background:transparent;
+  color:var(--on-surface-variant);cursor:pointer;font:var(--f-label-m);font-weight:500;
+  transition:background .15s,color .15s}
+.subchip:hover{background:var(--state-hover)}
+.subchip:active{background:var(--state-press)}
 .subchip .n{font:var(--f-label-s);opacity:.85}
-.subchip.active{background:var(--primary-container);color:var(--on-primary-container);
-  border-color:var(--primary-container)}
+.subchip.active{background:var(--primary-container);color:var(--on-primary-container)}
 .subchip.active .n{color:var(--on-primary-container);opacity:.8}
 
-.toolbar-row2{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
-/* ---- MD3 outlined text field（框形，非下划线） ---- */
-.search-box{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;
-  background:var(--surface);border:1px solid var(--outline);border-radius:4px;
-  padding:0 12px;height:48px;transition:border-color .15s,box-shadow .15s}
-.search-box:focus-within{border-color:var(--primary);border-width:2px;padding:0 11px}
-.search-box .ic{width:20px;height:20px;fill:var(--on-surface-variant);flex:none}
+.toolbar-row2{display:flex;gap:12px;margin-top:14px;align-items:center;flex-wrap:wrap}
+/* ---- MD3 搜索栏：28dp 圆角、软填充、无硬边框（标志性组件） ---- */
+.search-box{display:flex;align-items:center;gap:10px;flex:1;min-width:220px;
+  background:var(--surface-container-high);border:0;border-radius:28px;
+  padding:0 20px;height:56px;transition:box-shadow .2s}
+.search-box:focus-within{box-shadow:var(--elev-1)}
+.search-box .ic{width:22px;height:22px;color:var(--on-surface-variant);flex:none}
 .search-box input{flex:1;border:0;outline:0;background:transparent;height:100%;
   font:var(--f-body-l);color:var(--on-surface)}
 .search-box input::placeholder{color:var(--on-surface-variant)}
-/* ---- MD3 text button ---- */
+/* ---- MD3 text button（与搜索栏等高） ---- */
 .sort-btn{position:relative;overflow:hidden;flex:none;display:inline-flex;align-items:center;gap:6px;
-  padding:0 18px;min-height:48px;border:0;border-radius:9999px;background:transparent;
+  height:56px;padding:0 22px;border:0;border-radius:9999px;background:transparent;
   color:var(--primary);cursor:pointer;font:var(--f-label-l);font-weight:500;letter-spacing:.1px;
   transition:background .15s}
-.sort-btn:hover{background:var(--primary-container)}
-.sort-btn:active{transform:scale(.98)}
+.sort-btn:hover{background:var(--state-hover)}
+.sort-btn:active{background:var(--state-press)}
 
-/* ============ 列表 / 版本行（elevated card 12px） ============ */
+/* ============ 列表 / 版本行（elevated card 12dp） ============ */
 .vlist{display:flex;flex-direction:column;gap:10px;margin:8px 0 4px}
 .vsection{display:flex;align-items:baseline;justify-content:space-between;
-  margin:18px 4px 6px;padding-bottom:6px;border-bottom:1px solid var(--outline-variant)}
+  margin:20px 4px 8px;padding-bottom:8px;border-bottom:1px solid var(--outline-variant)}
 .vs-name{font:var(--f-title-m);font-weight:500;color:var(--on-surface)}
 .vs-count{font:var(--f-label-m);color:var(--on-surface-variant)}
-.vrow{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+.vrow{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   background:var(--surface-container-lowest);border-radius:12px;padding:14px 16px;
   box-shadow:var(--elev-1);transition:box-shadow .2s}
 .vrow:hover{box-shadow:var(--elev-2)}
@@ -198,7 +241,7 @@ a{color:var(--primary);text-decoration:none}
   margin-top:2px}
 .vrow .sp{flex:1}
 /* ---- MD3 type badge：tonal 容器小标签 ---- */
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:9999px;
+.badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:9999px;
   font:var(--f-label-s);font-weight:500;letter-spacing:.4px;white-space:nowrap}
 .badge.release{background:var(--secondary-container);color:var(--on-secondary-container)}
 .badge.snapshot{background:var(--surface-container-high);color:var(--on-surface-variant)}
@@ -210,23 +253,23 @@ a{color:var(--primary);text-decoration:none}
 .badge.af{background:#E6D5FF;color:#3A1D6E}
 .badge.unrel{background:var(--primary-container);color:var(--on-primary-container)}
 .badge.official{background:var(--surface-container-highest);color:var(--on-surface-variant)}
-.vrow .newest{display:inline-flex;align-items:center;padding:3px 9px;border-radius:9999px;
+.vrow .newest{display:inline-flex;align-items:center;padding:4px 10px;border-radius:9999px;
   font:var(--f-label-s);font-weight:500;background:var(--primary);color:var(--on-primary);letter-spacing:.4px}
 .vrow .ts,.vrow .st,.vrow .sys,.vrow .bmcl,.vrow .info{font:var(--f-label-s);
   color:var(--on-surface-variant);background:var(--surface-container-high);
-  padding:3px 9px;border-radius:9999px}
+  padding:4px 10px;border-radius:9999px}
 .vrow .hl{color:var(--primary);font-weight:700}
 
 /* ---- MD3 filled button（pill, primary） ---- */
 .dl-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:0 22px;min-height:40px;border:0;border-radius:9999px;
+  padding:0 24px;min-height:40px;border:0;border-radius:9999px;
   background:var(--primary);color:var(--on-primary);cursor:pointer;
   font:var(--f-label-l);font-weight:500;letter-spacing:.1px;
-  box-shadow:var(--elev-0,0 0 0 rgba(0,0,0,0));transition:box-shadow .15s,transform .1s}
+  box-shadow:var(--elev-0);transition:box-shadow .15s,transform .1s}
 .dl-btn:hover{box-shadow:var(--elev-1)}
-.dl-btn:active{transform:scale(.97);box-shadow:var(--elev-0,0 0 0 rgba(0,0,0,0))}
-.dl-btn .ic{width:18px;height:18px;fill:var(--on-primary)}
-.load-btn{flex:none;display:inline-flex;align-items:center;gap:8px;padding:0 24px;min-height:44px;
+.dl-btn:active{transform:scale(.97)}
+.dl-btn .ic{width:18px;height:18px;fill:currentColor}
+.load-btn{flex:none;display:inline-flex;align-items:center;gap:8px;padding:0 26px;min-height:44px;
   border:0;border-radius:9999px;background:var(--primary);color:var(--on-primary);
   cursor:pointer;font:var(--f-label-l);font-weight:500}
 .load-btn:hover{box-shadow:var(--elev-1)}
@@ -234,13 +277,13 @@ a{color:var(--primary);text-decoration:none}
 
 /* ---- MD3 filled-tonal button（浅容器） ---- */
 .act-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;
-  padding:0 16px;min-height:36px;border:0;border-radius:9999px;
+  padding:0 18px;min-height:36px;border:0;border-radius:9999px;
   background:var(--secondary-container);color:var(--on-secondary-container);
   cursor:pointer;font:var(--f-label-m);font-weight:500;transition:box-shadow .15s,transform .1s}
 .act-btn:hover{box-shadow:var(--elev-1)}
 .act-btn:active{transform:scale(.97)}
 .act-btn.primary{background:var(--primary-container);color:var(--on-primary-container)}
-.mini-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:0;
+.mini-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:0;
   border-radius:9999px;background:var(--surface-container-high);color:var(--on-surface);
   cursor:pointer;font:var(--f-label-m);font-weight:500}
 .mini-btn:hover{background:var(--surface-container-highest)}
@@ -248,26 +291,26 @@ a{color:var(--primary);text-decoration:none}
 
 /* ---- MD3 segmented button（outlined） ---- */
 .kind-seg{display:inline-flex;border:1px solid var(--outline);border-radius:9999px;
-  overflow:hidden;background:var(--surface)}
+  overflow:hidden;background:var(--surface-container-lowest)}
 .kind-seg button{position:relative;overflow:hidden;border:0;background:transparent;
-  color:var(--on-surface-variant);padding:8px 18px;cursor:pointer;
+  color:var(--on-surface-variant);padding:10px 22px;cursor:pointer;
   font:var(--f-label-l);font-weight:500;letter-spacing:.1px;transition:background .15s,color .15s}
 .kind-seg button+button{border-left:1px solid var(--outline-variant)}
 .kind-seg button.active{background:var(--primary-container);color:var(--on-primary-container)}
 .kind-seg button:disabled{opacity:.38;cursor:not-allowed}
 
 /* ============ 下载源卡片（outlined card） ============ */
-.src-card{background:var(--surface);border:1px solid var(--outline-variant);
+.src-card{background:var(--surface-container-lowest);border:1px solid var(--outline-variant);
   border-radius:12px;padding:14px 16px}
 .src-card .src{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0}
 .src-card .src .n{font:var(--f-body-m);font-weight:500;color:var(--on-surface)}
 .link-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.link-item{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
-  border:1px solid var(--outline);border-radius:9999px;background:var(--surface);
+.link-item{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;padding:10px 16px;
+  border:1px solid var(--outline);border-radius:9999px;background:var(--surface-container-lowest);
   color:var(--on-surface);font:var(--f-label-m);font-weight:500;cursor:pointer;
   transition:background .15s}
-.link-item:hover{background:var(--surface-container-high)}
-.link-item:active{transform:scale(.98)}
+.link-item:hover{background:var(--state-hover)}
+.link-item:active{background:var(--state-press)}
 .link-item .ic{width:16px;height:16px;fill:var(--on-surface-variant)}
 
 /* ============ 弹窗 / 底部抽屉（MD3 bottom sheet） ============ */
@@ -277,7 +320,7 @@ a{color:var(--primary);text-decoration:none}
 .modal-layer{position:fixed;inset:0;z-index:95;display:flex;align-items:flex-end;
   justify-content:center;pointer-events:none}
 .modal-sheet{position:relative;width:100%;max-width:560px;max-height:88vh;overflow:auto;
-  background:var(--surface);border-radius:28px 28px 0 0;padding:8px 20px 24px;
+  background:var(--surface-container-lowest);border-radius:28px 28px 0 0;padding:8px 20px 24px;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
   box-shadow:var(--elev-3);pointer-events:auto}
 .modal-layer.open .modal-sheet{transform:translateY(0)}
@@ -289,10 +332,10 @@ a{color:var(--primary);text-decoration:none}
 .modal-ver{font:var(--f-body-m);color:var(--on-surface-variant);margin-bottom:12px}
 .modal-note{font:var(--f-body-m);color:var(--on-surface-variant);margin:8px 0 14px;
   background:var(--surface-container);border-radius:12px;padding:10px 12px}
-.modal-cancel{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:0 20px;min-height:40px;border:0;border-radius:9999px;background:transparent;
+.modal-cancel{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:0 22px;min-height:40px;border:0;border-radius:9999px;background:transparent;
   color:var(--primary);cursor:pointer;font:var(--f-label-l);font-weight:500}
-.modal-cancel:hover{background:var(--primary-container)}
+.modal-cancel:hover{background:var(--state-hover)}
 
 /* ============ 打包进度面板 ============ */
 .progress-panel{background:var(--surface-container-high);border-radius:16px;padding:16px 18px;
@@ -308,11 +351,16 @@ a{color:var(--primary);text-decoration:none}
   background:var(--surface);border-radius:10px;padding:10px 12px;margin-top:10px;
   max-height:180px;overflow:auto;white-space:pre-wrap;word-break:break-all}
 .pp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pp-cancel{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;
+  padding:0 18px;min-height:36px;border:0;border-radius:9999px;background:var(--surface-container-lowest);
+  color:var(--on-surface);cursor:pointer;font:var(--f-label-m);font-weight:500;
+  box-shadow:var(--elev-1)}
+.pp-cancel:hover{background:var(--surface-container-highest)}
 
 /* ============ Snackbar（MD3 inverse-surface） ============ */
 .toast-wrap{position:fixed;left:0;right:0;bottom:20px;z-index:120;display:flex;
   justify-content:center;pointer-events:none;padding:0 12px}
-.toast{display:flex;align-items:center;gap:14px;max-width:560px;width:100%;
+.toast{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;max-width:560px;width:100%;
   background:var(--inverse-surface);color:var(--inverse-on-surface);
   border-radius:4px;padding:14px 16px;box-shadow:var(--elev-3);
   font:var(--f-body-m);transform:translateY(140%);opacity:0;
@@ -321,7 +369,7 @@ a{color:var(--primary);text-decoration:none}
 .toast .act-btn{background:transparent;color:var(--inverse-primary);padding:0 8px;min-height:32px}
 .toast .ok{color:var(--inverse-primary);font-weight:500}
 
-/* ============ 状态色（链接/错误/输出） ============ */
+/* ============ 状态色 / 文本 ============ */
 .ok{color:var(--primary)}
 .err{color:var(--error)}
 .out{color:var(--on-surface-variant)}
@@ -345,13 +393,19 @@ a{color:var(--primary);text-decoration:none}
 .meta-table td{font:var(--f-body-m);padding:7px 4px;border-bottom:1px solid var(--outline-variant)}
 .meta-table td:first-child{color:var(--on-surface-variant);width:120px;white-space:nowrap}
 
+/* ============ 页脚 ============ */
+footer{margin:36px 0 40px;padding:20px;background:var(--surface-container-low);
+  border-radius:16px;color:var(--on-surface-variant);font:var(--f-body-m);line-height:1.7}
+footer p{margin:0 0 10px}
+footer p:last-child{margin-bottom:0}
+footer b{color:var(--on-surface);font-weight:500}
+
 /* ============ Ripple（MD3 state layer ripple） ============ */
 .ripple{position:absolute;border-radius:50%;transform:scale(0);pointer-events:none;
-  background:rgba(0,0,0,.12);animation:md3-ripple .55s linear}
-.dl-btn .ripple,.load-btn .ripple{background:rgba(255,255,255,.32)}
-.modal-cancel .ripple,.sort-btn .ripple,.chip .ripple,.subchip .ripple,
+  background:rgba(255,255,255,.35);animation:md3-ripple .55s linear}
+.topbar .gh .ripple,.chip .ripple,.subchip .ripple,.sort-btn .ripple,
 .act-btn .ripple,.link-item .ripple,.mini-btn .ripple,.kind-seg button .ripple,
-.gh .ripple{background:rgba(0,0,0,.12)}
+.modal-cancel .ripple,.pp-cancel .ripple{background:rgba(27,109,36,.18)}
 @keyframes md3-ripple{to{transform:scale(1);opacity:0}}
 
 /* ============ 通用状态 class ============ */
@@ -359,18 +413,17 @@ a{color:var(--primary);text-decoration:none}
 .info{color:var(--on-surface-variant)}
 .small{font:var(--f-label-m);color:var(--on-surface-variant)}
 .blue{color:var(--primary)}
-.bmcl{color:var(--tertiary);font:var(--f-label-s);background:var(--tertiary-container);
-  padding:3px 9px;border-radius:9999px}
+.bmcl{color:var(--on-tertiary-container);font:var(--f-label-s);background:var(--tertiary-container);
+  padding:4px 10px;border-radius:9999px}
 .sys{color:var(--on-surface-variant)}
 .ts{color:var(--on-surface-variant)}
 
 @media (max-width:640px){
-  .hero{padding:28px 0 18px}
-  .toolbar{padding:12px}
+  .hero{padding:32px 0 20px}
+  .toolbar{padding:14px}
   .vrow{padding:12px 14px}
   .vrow-main{min-width:100%}
 }
-@media (prefers-color-scheme:dark){}
 </style>
 
 
